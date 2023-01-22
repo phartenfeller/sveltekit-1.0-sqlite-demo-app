@@ -26,16 +26,19 @@
 		</tbody>
 	</table>
 
-	<h2 class="is-size-3 mb-4 mt-6">Update Album Name</h2>
-	<form method="post">
-		<input
-			class="input"
-			type="text"
-			name="albumTitle"
-			value={data.album.albumTitle}
-			style="max-width: 50ch;"
-		/>
-		<input type="hidden" name="albumId" value={data.album.albumId} />
-		<button class="button is-primary" type="submit" formaction="?/updateAlbumTitle">Update</button>
-	</form>
+	{#if data.isAdmin}
+		<h2 class="is-size-3 mb-4 mt-6">Update Album Name</h2>
+		<form method="post">
+			<input
+				class="input"
+				type="text"
+				name="albumTitle"
+				value={data.album.albumTitle}
+				style="max-width: 50ch;"
+			/>
+			<input type="hidden" name="albumId" value={data.album.albumId} />
+			<button class="button is-primary" type="submit" formaction="?/updateAlbumTitle">Update</button
+			>
+		</form>
+	{/if}
 </div>
