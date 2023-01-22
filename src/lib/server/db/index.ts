@@ -102,3 +102,19 @@ export async function createUser(username: string, password: string): Promise<vo
 	const stmnt = db.prepare(sql);
 	stmnt.run({ username, password: hashedPassword });
 }
+
+export async function checkUserCredentials(username: string, password: string): Promise<boolean> {
+	const sql = `
+  select password
+    from users
+   where username = $username
+`;
+	const stmnt = db.prepare(sql);
+	const row = stmnt.get({ username });
+	if (row) {
+		return bcrypt.compare(password, row.password);
+	} else {
+		await bcrypt.hash(password, 12);
+		return false;
+	}
+}

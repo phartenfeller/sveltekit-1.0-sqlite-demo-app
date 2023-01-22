@@ -13,6 +13,6 @@
 			<div class="has-text-danger my-2">{form.errorMessage}</div>
 		{/if}
 		<button class="button mt-4 mr-3" type="submit" formaction="?/register">Register</button>
-		<button class="button is-primary mt-4" type="submit" formaction="?/register">Login</button>
+		<button class="button is-primary mt-4" type="submit" formaction="?/login">Login</button>
 	</form>
 </div>
