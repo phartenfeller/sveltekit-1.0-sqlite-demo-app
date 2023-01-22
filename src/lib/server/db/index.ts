@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import { DB_PATH } from '$env/static/private';
 import type { Album, AlbumTrack, Track } from './types';
+import bcrypt from 'bcrypt';
 
 const db = new Database(DB_PATH, { verbose: console.log });
 
@@ -88,4 +89,16 @@ export function updateAlbumTitle(albumId: number, albumTitle: string): void {
 `;
 	const stmnt = db.prepare(sql);
 	stmnt.run({ albumId, albumTitle });
+}
+
+export async function createUser(username: string, password: string): Promise<void> {
+	const sql = `
+  insert into users (username, password, roles)
+  values ($username, $password, 'admin:moderator')
+`;
+
+	const hashedPassword = await bcrypt.hash(password, 12);
+
+	const stmnt = db.prepare(sql);
+	stmnt.run({ username, password: hashedPassword });
 }
