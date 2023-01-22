@@ -19,7 +19,12 @@
 			<div class="navbar-item">
 				<div class="buttons">
 					{#if data?.username}
-						<a href="/logout" class="button is-primary">Hello {data.username}, Log out</a>
+						<a
+							href="/logout"
+							class="button is-primary"
+							data-sveltekit-preload-data="off"
+							data-sveltekit-reload>Hello {data.username}, Log out</a
+						>
 					{:else}
 						<a href="/login" class="button is-primary">Log in</a>
 					{/if}

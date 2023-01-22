@@ -64,3 +64,7 @@ export function getSession(sid: Sid): SessionInfo | undefined {
 		return undefined;
 	}
 }
+
+export function deleteSession(sid: string): void {
+	sessionStore.delete(sid);
+}
