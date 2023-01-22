@@ -118,3 +118,17 @@ export async function checkUserCredentials(username: string, password: string): 
 		return false;
 	}
 }
+
+export function getUserRoles(username: string): string[] {
+	const sql = `
+  select roles
+    from users
+   where username = $username
+`;
+	const stmnt = db.prepare(sql);
+	const row = stmnt.get({ username });
+	if (row) {
+		return row.roles.split(':');
+	}
+	return [];
+}
