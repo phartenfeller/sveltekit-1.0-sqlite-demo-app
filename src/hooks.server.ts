@@ -9,6 +9,9 @@ export const handle = (async ({ event, resolve }) => {
 		if (session) {
 			event.locals.username = session.username;
 			event.locals.roles = session.roles;
+		} else {
+			// session not found in our store -> remove cookie
+			cookies.delete('sid');
 		}
 	}
 
