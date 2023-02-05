@@ -1,14 +1,16 @@
 import { randomBytes } from 'node:crypto';
-import { getUserRoles } from '../db';
+import {
+	deleteDbSession,
+	deleteExpiredDbSessions,
+	getDbSession,
+	getUserRoles,
+	insertDbSession
+} from '../db';
+import type { SessionInfo, SessionInfoCache } from '../db/types';
 
-type SessionInfo = {
-	username: string;
-	roles: string[];
-	invalidAt: number;
-};
 type Sid = string;
 
-const sessionStore = new Map<Sid, SessionInfo>();
+const sessionStore = new Map<Sid, SessionInfoCache>();
 let nextClean = Date.now() + 1000 * 60 * 60; // 1 hour
 
 function clean() {
@@ -18,6 +20,7 @@ function clean() {
 			sessionStore.delete(sid);
 		}
 	}
+	deleteExpiredDbSessions(now);
 	nextClean = Date.now() + 1000 * 60 * 60; // 1 hour
 }
 
@@ -34,10 +37,17 @@ export function createSession(username: string, maxAge: number): string {
 
 	const roles = getUserRoles(username);
 
-	sessionStore.set(sid, {
+	const expiresAt = Date.now() + maxAge * 1000;
+
+	const data: SessionInfo = {
 		username,
-		roles,
-		invalidAt: Date.now() + maxAge
+		roles
+	};
+	insertDbSession(sid, data, expiresAt);
+
+	sessionStore.set(sid, {
+		...data,
+		invalidAt: expiresAt
 	});
 
 	if (Date.now() > nextClean) {
@@ -50,21 +60,21 @@ export function createSession(username: string, maxAge: number): string {
 }
 
 export function getSession(sid: Sid): SessionInfo | undefined {
-	const session = sessionStore.get(sid);
-	if (session) {
-		if (Date.now() > session.invalidAt) {
-			console.log('delete invalid session', sid);
-			sessionStore.delete(sid);
-			return undefined;
-		} else {
+	if (sessionStore.has(sid)) {
+		return sessionStore.get(sid);
+	} else {
+		const session = getDbSession(sid);
+		if (session) {
+			sessionStore.set(sid, session);
 			return session;
 		}
-	} else {
-		console.log('session not found', sid);
-		return undefined;
 	}
+
+	console.log('session not found', sid);
+	return undefined;
 }
 
 export function deleteSession(sid: string): void {
 	sessionStore.delete(sid);
+	deleteDbSession(sid);
 }

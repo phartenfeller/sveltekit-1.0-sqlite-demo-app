@@ -1,9 +1,70 @@
 import Database from 'better-sqlite3';
 import { DB_PATH } from '$env/static/private';
-import type { Album, AlbumTrack, Track } from './types';
+import type { Album, AlbumTrack, Genre, SessionInfo, SessionInfoCache, Track } from './types';
 import bcrypt from 'bcrypt';
 
 const db = new Database(DB_PATH, { verbose: console.log });
+addSessionsTable();
+
+function addSessionsTable() {
+	const sql = `
+	create table if not exists sessions (
+		ses_id          text primary key
+	, ses_created     integer not null default (strftime( '%s', 'now' ) * 1000)
+	, ses_expires     integer not null
+	, ses_data        text not null
+	) strict;
+	`;
+	const stmnt = db.prepare(sql);
+	stmnt.run();
+}
+
+export function deleteExpiredDbSessions(now: number) {
+	const sql = `
+	delete from sessions
+	 where ses_expires < $now
+`;
+
+	const stmnt = db.prepare(sql);
+	stmnt.run({ now });
+}
+
+export function insertDbSession(sid: string, sessionInfo: SessionInfo, expiresAt: number) {
+	const sql = `
+	insert into sessions (ses_id, ses_expires, ses_data)
+	values ($sid, $expires, $data)
+`;
+
+	const stmnt = db.prepare(sql);
+	stmnt.run({ sid, expires: expiresAt, data: JSON.stringify(sessionInfo) });
+}
+
+export function deleteDbSession(sid: string) {
+	const sql = `
+	delete from sessions
+	 where ses_id = $sid
+`;
+	const stmnt = db.prepare(sql);
+	stmnt.run({ sid });
+}
+
+export function getDbSession(sid: string): SessionInfoCache | undefined {
+	const sql = `
+	select ses_data as data
+	     , ses_expires as expires
+	  from sessions
+	 where ses_id = $sid
+`;
+
+	const stmnt = db.prepare(sql);
+	const row = stmnt.get({ sid }) as { data: string; expires: number };
+	if (row) {
+		const data = JSON.parse(row.data);
+		data.expires = row.expires;
+		return data as SessionInfoCache;
+	}
+	return undefined;
+}
 
 export function getInitialTracks(limit = 50): Track[] {
 	const sql = `
@@ -69,11 +130,15 @@ export function getAlbumById(albumId: number): Album {
 
 export function getAlbumTracks(albumId: number): AlbumTrack[] {
 	const sql = `
-  select t.TrackId as trackId
-     , t.Name as trackName
-     , t.Milliseconds as trackMs
-  from tracks t
- where t.AlbumId = $albumId
+	select t.TrackId as trackId
+	, t.Name as trackName
+	, t.Milliseconds as trackMs
+	, t.Composer as composer
+	, g.Name as genre
+from tracks t
+join genres g
+ on t.GenreId = g.GenreId
+where t.AlbumId = $albumId
 order by t.TrackId
 `;
 	const stmnt = db.prepare(sql);
@@ -131,4 +196,11 @@ export function getUserRoles(username: string): string[] {
 		return row.roles.split(':');
 	}
 	return [];
+}
+
+export function getGenres(): Genre[] {
+	const sql = `select GenreId as genreId, Name as genreName from genres`;
+	const stmnt = db.prepare(sql);
+	const rows = stmnt.all();
+	return rows as Genre[];
 }
