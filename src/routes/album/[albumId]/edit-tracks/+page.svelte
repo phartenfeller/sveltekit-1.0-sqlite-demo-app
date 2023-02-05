@@ -8,7 +8,7 @@
 
 	export let data: PageData;
 	const genreArray = data.genres.map((g) => g.genreName);
-
+	const deletedIds: Set<number> = new Set();
 	let grid: Grid;
 
 	const gridOptions: GridOptions = {
@@ -19,8 +19,9 @@
 			resizable: true,
 			editable: true
 		},
+		rowSelection: 'multiple',
 		columnDefs: [
-			{ field: 'trackId', headerName: 'ID', editable: false },
+			{ field: 'trackId', headerName: 'ID', editable: false, checkboxSelection: true },
 			{ field: 'trackName', headerName: 'Tracks' },
 			{
 				field: 'trackMs',
@@ -82,6 +83,12 @@
 			gridOptions.api?.setFocusedCell(rowcount, firstCol!);
 		}, 50);
 	}
+
+	function handleDelete() {
+		const selectedRowData = gridOptions.api?.getSelectedRows();
+		selectedRowData?.forEach(({ trackId }) => deletedIds.add(trackId));
+		gridOptions.api?.applyTransaction({ remove: selectedRowData });
+	}
 </script>
 
 <div class="px-4">
@@ -90,7 +97,12 @@
 	<div class="py-4 columns">
 		<div id="myGrid" style="height: 500px;" class="ag-theme-alpine column is-10" />
 		<div class="column">
-			<button class="button" on:click={handleAddRow}>Add Row</button>
+			<div>
+				<button class="button" on:click={handleAddRow}>Add Row</button>
+			</div>
+			<div class="py-2">
+				<button class="button" on:click={handleDelete}>Delete Rows</button>
+			</div>
 		</div>
 	</div>
 </div>
