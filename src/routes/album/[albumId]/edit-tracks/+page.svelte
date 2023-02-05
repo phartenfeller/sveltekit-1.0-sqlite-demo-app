@@ -38,7 +38,8 @@
 				}
 			}
 		],
-		rowData: data.tracks
+		rowData: data.tracks,
+		getRowId: (params) => params.data.trackId
 	};
 
 	onMount(() => {
@@ -48,10 +49,48 @@
 		}
 		grid = new Grid(gridEl, gridOptions);
 	});
+
+	function handleAddRow() {
+		const rowcount = gridOptions.api?.getDisplayedRowCount();
+		if (!rowcount) {
+			console.error('Grid API not accessible');
+			return;
+		}
+
+		let maxId = 0;
+		gridOptions.api?.forEachNode((rowNode) => {
+			if (rowNode.data.trackId > maxId) maxId = rowNode.data.trackId;
+		});
+
+		const newRow = {
+			trackId: maxId + 1,
+			trackName: '',
+			trackMs: undefined,
+			composer: '',
+			genre: ''
+		};
+
+		gridOptions.api?.applyTransaction({
+			add: [newRow],
+			addIndex: rowcount
+		});
+
+		setTimeout(() => {
+			const firstCol = gridOptions.columnApi?.getAllDisplayedColumns()[0];
+			gridOptions.api?.ensureColumnVisible(firstCol!);
+			gridOptions.api?.ensureIndexVisible(rowcount);
+			gridOptions.api?.setFocusedCell(rowcount, firstCol!);
+		}, 50);
+	}
 </script>
 
 <div class="px-4">
 	<h1 class="is-size-1">Tracks for {data.album.albumTitle}</h1>
 
-	<div id="myGrid" style="height: 500px; width: 100%;" class="ag-theme-alpine" />
+	<div class="py-4 columns">
+		<div id="myGrid" style="height: 500px;" class="ag-theme-alpine column is-10" />
+		<div class="column">
+			<button class="button" on:click={handleAddRow}>Add Row</button>
+		</div>
+	</div>
 </div>
