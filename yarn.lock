@@ -669,6 +669,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ag-grid-community@npm:^29.0.0":
+  version: 29.0.0
+  resolution: "ag-grid-community@npm:29.0.0"
+  checksum: d9b222e75a9b79c36247c75812607cf2cd19b7b63eb233dc7308b6b0301e795a28482ac4309165d2b305779489cdc1e427bb90456b8812a97b25e863c7c6859e
+  languageName: node
+  linkType: hard
+
 "agent-base@npm:6, agent-base@npm:^6.0.2":
   version: 6.0.2
   resolution: "agent-base@npm:6.0.2"
@@ -3165,6 +3172,7 @@ __metadata:
     "@types/better-sqlite3": ^7.6.3
     "@typescript-eslint/eslint-plugin": ^5.48.2
     "@typescript-eslint/parser": ^5.48.2
+    ag-grid-community: ^29.0.0
     bcrypt: ^5.1.0
     better-sqlite3: ^8.0.1
     eslint: ^8.32.0

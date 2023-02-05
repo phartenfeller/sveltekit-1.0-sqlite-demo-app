@@ -27,6 +27,8 @@
 	</table>
 
 	{#if data.isAdmin}
+		<a href={`/album/${data.album.albumId}/edit-tracks`} class="button is-primary">Edit Tracks</a>
+
 		<h2 class="is-size-3 mb-4 mt-6">Update Album Name</h2>
 		<form method="post">
 			<input
