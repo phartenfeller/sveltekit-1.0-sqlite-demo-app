@@ -1,6 +1,14 @@
 import Database from 'better-sqlite3';
 import { DB_PATH } from '$env/static/private';
-import type { Album, AlbumTrack, Genre, SessionInfo, SessionInfoCache, Track } from './types';
+import type {
+	Album,
+	AlbumTrack,
+	Genre,
+	SessionInfo,
+	SessionInfoCache,
+	Track,
+	TracksGridSaveData
+} from './types';
 import bcrypt from 'bcrypt';
 
 const db = new Database(DB_PATH, { verbose: console.log });
@@ -136,7 +144,7 @@ export function getAlbumTracks(albumId: number): AlbumTrack[] {
 	, t.Composer as composer
 	, g.Name as genre
 from tracks t
-join genres g
+left join genres g
  on t.GenreId = g.GenreId
 where t.AlbumId = $albumId
 order by t.TrackId
@@ -203,4 +211,57 @@ export function getGenres(): Genre[] {
 	const stmnt = db.prepare(sql);
 	const rows = stmnt.all();
 	return rows as Genre[];
+}
+
+export function saveGridTracks(data: TracksGridSaveData) {
+	if (data.deleted && data.deleted.length > 0) {
+		const delSql = `delete from tracks where Trackid = $trackId`;
+		const delStmnt = db.prepare(delSql);
+		data.deleted.forEach((trackId) => delStmnt.run({ trackId }));
+	}
+
+	if (data.rows && data.rows.length > 0) {
+		const genres = getGenres();
+		const rows = data.rows.map((track) => {
+			const genre = genres.find((g) => g.genreName === track.genre);
+			return {
+				trackId: track.trackId > 0 ? track.trackId : null,
+				trackName: track.trackName,
+				trackMs: track.trackMs,
+				composer: track.composer,
+				genreId: genre ? genre.genreId : null
+			};
+		});
+
+		const mergeSql = `
+    insert into tracks (
+      TrackId,
+      Name,
+      Milliseconds,
+      Composer,
+      GenreId,
+      MediaTypeId,
+      UnitPrice,
+      AlbumId
+    ) values (
+      $trackId,
+      $trackName,
+      $trackMs,
+      $composer,
+      $genreId,
+      1,
+      1,
+      $albumId
+    )
+    on conflict (TrackId) do
+    update
+       set Name =  excluded.Name
+         , GenreId = excluded.GenreId
+         , Composer = excluded.Composer
+         , Milliseconds = excluded.Milliseconds
+     where TrackId = excluded.TrackId
+    ;`;
+		const mergeStmnt = db.prepare(mergeSql);
+		rows.forEach((track) => mergeStmnt.run({ ...track, albumId: data.albumId }));
+	}
 }

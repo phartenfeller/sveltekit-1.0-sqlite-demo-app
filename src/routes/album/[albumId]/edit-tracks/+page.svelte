@@ -51,7 +51,10 @@
 		grid = new Grid(gridEl, gridOptions);
 	});
 
+	let newRows = 0;
+
 	function handleAddRow() {
+		newRows++;
 		const rowcount = gridOptions.api?.getDisplayedRowCount();
 		if (!rowcount) {
 			console.error('Grid API not accessible');
@@ -64,7 +67,7 @@
 		});
 
 		const newRow = {
-			trackId: maxId + 1,
+			trackId: newRows * -1,
 			trackName: '',
 			trackMs: undefined,
 			composer: '',
@@ -89,6 +92,36 @@
 		selectedRowData?.forEach(({ trackId }) => deletedIds.add(trackId));
 		gridOptions.api?.applyTransaction({ remove: selectedRowData });
 	}
+
+	let error = false;
+
+	async function handleSave() {
+		let rows: any[] = [];
+		gridOptions.api?.forEachNode((rowNode) => {
+			rows.push(rowNode.data);
+		});
+
+		const payload = {
+			deleted: Array.from(deletedIds.values()),
+			rows
+		};
+
+		console.log('payload', payload);
+
+		const res = await fetch(`/api/${data.album.albumId}/handleTrackGrid`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(payload)
+		});
+
+		if (res.ok) {
+			location.reload();
+		} else {
+			error = true;
+		}
+	}
 </script>
 
 <div class="px-4">
@@ -103,6 +136,17 @@
 			<div class="py-2">
 				<button class="button" on:click={handleDelete}>Delete Rows</button>
 			</div>
+			<div class="py-2">
+				<button class="button is-primary" on:click={handleSave}>Save changes</button>
+			</div>
+			{#if error}
+				<div class="py-2">
+					<div class="notification is-danger">
+						<button class="delete" on:click={() => (error = false)} />
+						Error saving changes
+					</div>
+				</div>
+			{/if}
 		</div>
 	</div>
 </div>

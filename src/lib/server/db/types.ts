@@ -33,3 +33,9 @@ export type AlbumTrack = {
 };
 
 export type Genre = { genreId: number; genreName: string };
+
+export type TracksGridSaveData = {
+	deleted?: number[];
+	rows?: AlbumTrack[];
+	albumId: number;
+};
