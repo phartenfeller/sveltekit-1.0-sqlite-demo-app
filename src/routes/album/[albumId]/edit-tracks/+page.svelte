@@ -108,7 +108,7 @@
 
 		console.log('payload', payload);
 
-		const res = await fetch(`/api/${data.album.albumId}/handleTrackGrid`, {
+		const res = await fetch(`/api/album/${data.album.albumId}/handleTrackGrid`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
