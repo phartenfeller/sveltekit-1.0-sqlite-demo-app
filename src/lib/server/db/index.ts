@@ -10,6 +10,7 @@ import type {
 	TracksGridSaveData
 } from './types';
 import bcrypt from 'bcrypt';
+import { setTimeout } from 'timers/promises';
 
 const db = new Database(DB_PATH, { verbose: console.log });
 addSessionsTable();
@@ -152,6 +153,11 @@ order by t.TrackId
 	const stmnt = db.prepare(sql);
 	const rows = stmnt.all({ albumId });
 	return rows as AlbumTrack[];
+}
+
+export async function getAlbumTracksSlow(albumId: number): Promise<AlbumTrack[]> {
+	await setTimeout(3000);
+	return getAlbumTracks(albumId);
 }
 
 export function updateAlbumTitle(albumId: number, albumTitle: string): void {

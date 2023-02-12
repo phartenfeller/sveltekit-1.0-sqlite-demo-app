@@ -1,8 +1,8 @@
-import { getAlbumById, getAlbumTracks, getGenres } from '$lib/server/db';
+import { getAlbumById, getAlbumTracksSlow, getGenres } from '$lib/server/db';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from '../$types';
 
-export const load = (({ params, locals }) => {
+export const load = (async ({ params, locals }) => {
 	if (!locals?.roles?.includes('admin')) {
 		throw error(404, 'Unauthorized');
 	}
@@ -19,7 +19,7 @@ export const load = (({ params, locals }) => {
 		throw error(404, 'Album not found');
 	}
 
-	const tracks = getAlbumTracks(albumId);
+	const tracks = await getAlbumTracksSlow(albumId);
 	const genres = getGenres();
 
 	return {
