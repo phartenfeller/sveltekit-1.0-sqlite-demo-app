@@ -39,16 +39,21 @@
 				}
 			}
 		],
-		rowData: data.tracks,
+		// rowData: data.tracks,
 		getRowId: (params) => params.data.trackId
 	};
 
-	onMount(() => {
+	onMount(async () => {
 		const gridEl = document.getElementById('myGrid');
 		if (!gridEl) {
 			throw new Error('Grid element not found');
 		}
 		grid = new Grid(gridEl, gridOptions);
+
+		const res = await fetch(`/api/album/${data.album.albumId}/loadTracks`);
+		const { tracks } = await res.json();
+
+		gridOptions.api?.setRowData(tracks);
 	});
 
 	let newRows = 0;
