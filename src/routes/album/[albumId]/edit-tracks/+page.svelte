@@ -50,10 +50,7 @@
 		}
 		grid = new Grid(gridEl, gridOptions);
 
-		const res = await fetch(`/api/album/${data.album.albumId}/loadTracks`);
-		const { tracks } = await res.json();
-
-		gridOptions.api?.setRowData(tracks);
+		gridOptions.api?.setRowData(data.tracks);
 	});
 
 	let newRows = 0;
