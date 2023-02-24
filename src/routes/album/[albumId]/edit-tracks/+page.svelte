@@ -50,7 +50,8 @@
 		}
 		grid = new Grid(gridEl, gridOptions);
 
-		gridOptions.api?.setRowData(data.tracks);
+		const tracks = await data.streamed.tracks;
+		gridOptions.api?.setRowData(tracks);
 	});
 
 	let newRows = 0;

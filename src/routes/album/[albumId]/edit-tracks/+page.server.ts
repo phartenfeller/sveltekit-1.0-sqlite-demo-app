@@ -19,12 +19,13 @@ export const load = (async ({ params, locals }) => {
 		throw error(404, 'Album not found');
 	}
 
-	const tracks = await getAlbumTracksSlow(albumId);
 	const genres = getGenres();
 
 	return {
 		album,
-		tracks,
-		genres
+		genres,
+		streamed: {
+			tracks: getAlbumTracksSlow(albumId)
+		}
 	};
 }) satisfies PageServerLoad;
