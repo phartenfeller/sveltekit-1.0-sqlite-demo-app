@@ -44,5 +44,32 @@ export const actions: Actions = {
 		}
 
 		updateAlbumTitle(albumId, albumTitle);
+	},
+	updateAlbumImage: async ({ request, locals }) => {
+		if (!locals.username || !locals?.roles?.includes('admin')) {
+			throw error(401, {
+				message: 'Unauthorized'
+			});
+		}
+
+		const data = await request.formData();
+
+		const albumIdStr = data.get('albumId')?.toString();
+		const albumId = albumIdStr ? parseInt(albumIdStr) : null;
+
+		if (!albumId) {
+			throw error(400, 'AlbumId missing');
+		}
+
+		const albumImage = data.get('albumImage')?.valueOf() as File;
+		console.log(
+			albumId,
+			'albumImage',
+			albumImage,
+			albumImage?.name,
+			albumImage?.type,
+			albumImage?.size,
+			albumImage?.lastModified
+		);
 	}
 };
