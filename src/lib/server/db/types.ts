@@ -22,6 +22,7 @@ export type Album = {
 	albumTitle: string;
 	artistId: number;
 	artistName: string;
+	imgName?: string;
 };
 
 export type AlbumTrack = {
@@ -38,4 +39,12 @@ export type TracksGridSaveData = {
 	deleted?: number[];
 	rows?: AlbumTrack[];
 	albumId: number;
+};
+
+export type AlbumImage = {
+	filename: string;
+	mimeType: string;
+	lastModified: number;
+	size: number;
+	data: Blob;
 };

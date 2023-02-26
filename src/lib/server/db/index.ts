@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import { DB_PATH } from '$env/static/private';
 import type {
 	Album,
+	AlbumImage,
 	AlbumTrack,
 	Genre,
 	SessionInfo,
@@ -13,6 +14,7 @@ import bcrypt from 'bcrypt';
 
 const db = new Database(DB_PATH, { verbose: console.log });
 addSessionsTable();
+addImageTable();
 
 function addSessionsTable() {
 	const sql = `
@@ -21,6 +23,22 @@ function addSessionsTable() {
 	, ses_created     integer not null default (strftime( '%s', 'now' ) * 1000)
 	, ses_expires     integer not null
 	, ses_data        text not null
+	) strict;
+	`;
+	const stmnt = db.prepare(sql);
+	stmnt.run();
+}
+
+function addImageTable() {
+	const sql = `
+	create table if not exists album_images (
+		img_album_id      integer primary key
+	, img_name          text not null
+	, img_mime_type     text not null       
+	, img_last_modified integer not null default (strftime( '%s', 'now' ) * 1000)
+	, img_size          integer not null
+	, img_data          blob not null
+	, constraint img_album_id_fk foreign key (img_album_id) references albums (AlbumId)
 	) strict;
 	`;
 	const stmnt = db.prepare(sql);
@@ -127,8 +145,10 @@ export function getAlbumById(albumId: number): Album {
      , a.Title as albumTitle
      , at.ArtistId as artistId
      , at.Name as artistName
+		 , ai.img_name as imgName
   from albums a
   join artists at on a.AlbumId = at.ArtistId
+	left join album_images ai on a.AlbumId = ai.img_album_id
  where a.AlbumId = $albumId;
   `;
 	const stmnt = db.prepare(sql);
@@ -264,4 +284,70 @@ export function saveGridTracks(data: TracksGridSaveData) {
 		const mergeStmnt = db.prepare(mergeSql);
 		rows.forEach((track) => mergeStmnt.run({ ...track, albumId: data.albumId }));
 	}
+}
+
+export async function mergeAlbumImage(albumId: number, image: File) {
+	const arrayBuffer = await image.arrayBuffer();
+	const buffer = Buffer.from(arrayBuffer);
+
+	const sql = `
+	insert into album_images (
+		img_album_id
+	, img_name
+	, img_mime_type
+	, img_last_modified
+	, img_size
+	, img_data
+	)
+	values (
+	  $albumId
+	, $filename
+	, $mimeType
+	, $lastModified
+	, $size
+	, $data
+	)
+	on conflict (img_album_id) do
+	update
+		 set img_name = excluded.img_name
+		   , img_mime_type = excluded.img_mime_type
+			 , img_last_modified = excluded.img_last_modified
+			 , img_size = excluded.img_size
+			 , img_data = excluded.img_data	
+	 where img_album_id = excluded.img_album_id
+	`;
+	const stmnt = db.prepare(sql);
+	stmnt.run({
+		albumId,
+		filename: image.name,
+		mimeType: image.type,
+		lastModified: image.lastModified,
+		size: image.size,
+		data: buffer
+	});
+}
+
+export function getAlbumImage(albumId: number, filename: string): AlbumImage {
+	const sql = `
+	select img_name as filename
+	, img_mime_type as mimeType
+	, img_last_modified as lastModified
+	, img_size as size
+	, img_data as data
+	from album_images
+	where img_album_id = $albumId and img_name = $filename
+	`;
+
+	const stmnt = db.prepare(sql);
+	const row = stmnt.get({ albumId, filename });
+
+	const img: AlbumImage = {
+		filename: row.filename,
+		mimeType: row.mimeType,
+		lastModified: row.lastModified,
+		size: row.size,
+		data: new Blob([row.data], { type: row.mimeType })
+	};
+
+	return img;
 }

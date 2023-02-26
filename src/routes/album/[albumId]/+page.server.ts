@@ -1,4 +1,4 @@
-import { getAlbumById, getAlbumTracks, updateAlbumTitle } from '$lib/server/db';
+import { getAlbumById, getAlbumTracks, mergeAlbumImage, updateAlbumTitle } from '$lib/server/db';
 import { error, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
@@ -71,5 +71,7 @@ export const actions: Actions = {
 			albumImage?.size,
 			albumImage?.lastModified
 		);
+
+		mergeAlbumImage(albumId, albumImage);
 	}
 };

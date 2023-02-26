@@ -15,6 +15,15 @@
 	<h1 class="is-size-1">{data.album.albumTitle}</h1>
 	<p class="is-size-4">By {data.album.artistName}</p>
 
+	{#if data.album.imgName}
+		<img
+			src={`/api/album/${data.album.albumId}/image/${data.album.imgName}`}
+			alt=""
+			class="mt-4 image"
+			style="max-width: 250px;"
+		/>
+	{/if}
+
 	<table class="table mt-6">
 		<thead>
 			<tr>
