@@ -1,6 +1,14 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	export let data: PageData;
+
+	let uploadedImage: string;
+
+	function handleImageUpload(e: Event) {
+		const image = (e.target as HTMLInputElement)?.files?.[0];
+		if (!image) return;
+		uploadedImage = URL.createObjectURL(image);
+	}
 </script>
 
 <div class="px-4">
@@ -41,6 +49,28 @@
 			<input type="hidden" name="albumId" value={data.album.albumId} />
 			<button class="button is-primary" type="submit" formaction="?/updateAlbumTitle">Update</button
 			>
+		</form>
+
+		<h2 class="is-size-3 mb-4 mt-6">Update Album Image</h2>
+		<form method="post" enctype="multipart/form-data">
+			<input type="hidden" name="albumId" value={data.album.albumId} />
+			<input type="file" name="albumImage" accept="image/*" on:change={handleImageUpload} />
+
+			{#if uploadedImage}
+				<div class="mt-4">
+					<img src={uploadedImage} style="max-width: 50ch;" alt="" />
+				</div>
+			{/if}
+
+			<div class="mt-4 mb-6">
+				<button
+					class="button is-primary is-disabled"
+					type="submit"
+					formaction="?/updateAlbumImage"
+					disabled={!uploadedImage ?? null}
+					>Upload Image
+				</button>
+			</div>
 		</form>
 	{/if}
 </div>
