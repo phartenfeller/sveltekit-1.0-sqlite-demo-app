@@ -12,36 +12,41 @@
 </script>
 
 <div class="px-4">
-	<h1 class="is-size-1">{data.album.albumTitle}</h1>
-	<p class="is-size-4">By {data.album.artistName}</p>
+	<div class="columns">
+		<div class="column is-three-quarters">
+			<h1 class="is-size-1">{data.album.albumTitle}</h1>
+			<p class="is-size-4">By {data.album.artistName}</p>
 
-	{#if data.album.imgName}
-		<img
-			src={`/api/album/${data.album.albumId}/image/${data.album.imgName}`}
-			alt=""
-			class="mt-4 image"
-			style="max-width: 250px;"
-		/>
-	{/if}
-
-	<table class="table mt-6">
-		<thead>
-			<tr>
-				<th>#</th>
-				<th>Track</th>
-				<th>Duration</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each data.tracks as track, i}
-				<tr>
-					<td>{i + 1}</td>
-					<td>{track.trackName}</td>
-					<td>{Math.floor(track.trackMs / 1000)} s</td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
+			<table class="table mt-6">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Track</th>
+						<th>Duration</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each data.tracks as track, i}
+						<tr>
+							<td>{i + 1}</td>
+							<td>{track.trackName}</td>
+							<td>{Math.floor(track.trackMs / 1000)} s</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+		<div class="column">
+			{#if data.album.imgName}
+				<img
+					src={`/api/album/${data.album.albumId}/image/${data.album.imgName}`}
+					alt=""
+					class="mt-4 image"
+					style="max-width: 250px;"
+				/>
+			{/if}
+		</div>
+	</div>
 
 	{#if data.isAdmin}
 		<a href={`/album/${data.album.albumId}/edit-tracks`} class="button is-primary">Edit Tracks</a>
