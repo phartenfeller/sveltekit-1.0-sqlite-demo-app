@@ -6,9 +6,17 @@ Code from following YouTube tutorials:
   - [Build and run SvelteKit Apps with Docker](https://youtu.be/LwzoWuHjOWk)
   - [AG-Grid in SvelteKit for Spreadsheet like data editing](https://youtu.be/VfFKEiMAloc)
   - [Installable SvelteKit App with Web App Manifest](https://youtu.be/ywXXOvfKoYg)
-  - [Lazy Loading for slowly loading pages in SvelteKit](https://youtu.be/QJbABYCBYOs)
+  - [Lazy Loading for slowly loading pages in SvelteKit](https://youtu.be/7Kl4sKez1bs)
+  - [Upload, Store and Retrieve Images in SvelteKit (with SQLite)](https://youtu.be/OLg6RwESnSo)
 
 Full Playlist: [SvelteKit](https://www.youtube.com/playlist?list=PLIyDDWd5rhaYwAiXQyonufcZgc_xOMtId)
+
+## Run locally
+
+- Install with yarn or npm `yarn install` or `npm install`
+  - You might need to delete `supportedArchitectures` in the `.yarnrc.yml` file if you are not on an M1 Mac
+- Start with `yarn dev` or `npm run dev`
+- Username and Password for login is `philipp`
 
 ## Docker
 
