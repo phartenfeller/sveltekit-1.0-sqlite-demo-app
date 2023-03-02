@@ -147,7 +147,7 @@ export function getAlbumById(albumId: number): Album {
      , at.Name as artistName
 		 , ai.img_name as imgName
   from albums a
-  join artists at on a.AlbumId = at.ArtistId
+  join artists at on a.ArtistId = at.ArtistId
 	left join album_images ai on a.AlbumId = ai.img_album_id
  where a.AlbumId = $albumId;
   `;
