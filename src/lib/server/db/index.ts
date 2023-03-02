@@ -351,3 +351,21 @@ export function getAlbumImage(albumId: number, filename: string): AlbumImage {
 
 	return img;
 }
+
+export function otherAlbumsOfArtist(artistId: number, albumId: number): Album[] {
+	const sql = `
+		select a.AlbumId as albumId
+			 , a.Title as albumTitle
+			 , at.ArtistId as artistId
+			 , at.Name as artistName
+			 , ai.img_name as imgName
+		from albums a
+		join artists at on a.ArtistId = at.ArtistId
+		left join album_images ai on a.AlbumId = ai.img_album_id
+	 where a.ArtistId = $artistId
+	   and a.AlbumId != $albumId;
+		`;
+	const stmnt = db.prepare(sql);
+	const rows = stmnt.all({ artistId, albumId });
+	return rows as Album[];
+}

@@ -16,6 +16,12 @@
 		<div class="column is-three-quarters">
 			<h1 class="is-size-1">{data.album.albumTitle}</h1>
 			<p class="is-size-4">By {data.album.artistName}</p>
+			<a
+				href="/api/album/{data.album.albumId}/pdf/{data.album.albumTitle
+					.toLowerCase()
+					.replaceAll(' ', '-')}.pdf"
+				class="button">Download Sheet</a
+			>
 
 			<table class="table mt-6">
 				<thead>
