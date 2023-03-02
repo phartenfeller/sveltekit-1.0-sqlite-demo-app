@@ -8,6 +8,7 @@ Code from following YouTube tutorials:
   - [Installable SvelteKit App with Web App Manifest](https://youtu.be/ywXXOvfKoYg)
   - [Lazy Loading for slowly loading pages in SvelteKit](https://youtu.be/7Kl4sKez1bs)
   - [Upload, Store and Retrieve Images in SvelteKit (with SQLite)](https://youtu.be/OLg6RwESnSo)
+  - [Generate a PDF with pdfmake (from SvelteKit)](https://youtu.be/gS1wlOdRLAk)
 
 Full Playlist: [SvelteKit](https://www.youtube.com/playlist?list=PLIyDDWd5rhaYwAiXQyonufcZgc_xOMtId)
 
