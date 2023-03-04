@@ -6,6 +6,7 @@
 		flexRender,
 		getCoreRowModel,
 		getSortedRowModel,
+		getFilteredRowModel,
 		type SortDirection
 	} from '@tanstack/svelte-table';
 	import { writable } from 'svelte/store';
@@ -21,9 +22,8 @@
 
 	const defaultColumns: ColumnDef<Invoice>[] = [
 		{
-			accessorKey: 'id',
-			header: 'ID',
-			cell: (info) => info.getValue()
+			accessorFn: (row) => row.id.toString(),
+			header: 'ID'
 		},
 		{
 			accessorKey: 'date',
@@ -54,25 +54,62 @@
 			enableSorting: false
 		},
 		{
-			accessorKey: 'total',
-			header: 'Total',
-			cell: (info) => numFormat.format(info.getValue() as number)
+			accessorFn: (row) => numFormat.format(row.total),
+			header: 'Total'
 		}
 	];
+
+	let globalFilter = '';
 
 	const options = writable<TableOptions<Invoice>>({
 		data: data.invoices,
 		columns: defaultColumns,
 		getCoreRowModel: getCoreRowModel(),
-		getSortedRowModel: getSortedRowModel()
+		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+		state: {
+			globalFilter
+		}
 	});
 
+	function setGlobalFilter(filter: string) {
+		globalFilter = filter;
+		options.update((old) => {
+			return {
+				...old,
+				state: {
+					...old.state,
+					globalFilter: filter
+				}
+			};
+		});
+	}
+
 	const table = createSvelteTable(options);
+
+	let timer: NodeJS.Timeout;
+	function handleSearch(e: Event) {
+		clearTimeout(timer);
+		timer = setTimeout(() => {
+			const target = e.target as HTMLInputElement;
+			setGlobalFilter(target.value);
+		}, 300);
+	}
+
+	const noTypeCheck = (x: any) => x;
 </script>
 
 <div class="px-4">
 	<h1 class="is-size-1">Invoices</h1>
 
+	<input
+		type="search"
+		class="input"
+		on:keyup={handleSearch}
+		on:search={handleSearch}
+		placeholder="Search..."
+		{...noTypeCheck(null)}
+	/>
 	<table class="table">
 		<thead>
 			{#each $table.getHeaderGroups() as headerGroup}
