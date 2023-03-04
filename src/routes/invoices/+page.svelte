@@ -7,12 +7,16 @@
 		getCoreRowModel,
 		getSortedRowModel,
 		getFilteredRowModel,
+		getFacetedRowModel,
+		getFacetedUniqueValues,
+		getFacetedMinMaxValues,
 		type SortDirection,
 		type FilterFn
 	} from '@tanstack/svelte-table';
 	import { rankItem } from '@tanstack/match-sorter-utils';
 	import { writable } from 'svelte/store';
 	import type { ColumnDef, TableOptions } from '@tanstack/svelte-table';
+	import FacetCheckboxes from '$lib/components/tanstackTable/FacetCheckboxes.svelte';
 
 	export let data: PageData;
 
@@ -21,6 +25,24 @@
 	function getSortSymbol(isSorted: boolean | SortDirection) {
 		return isSorted ? (isSorted === 'asc' ? '🔼' : '🔽') : '';
 	}
+
+	const globalFilterFn: FilterFn<any> = (row, columnId, value, addMeta) => {
+		if (Array.isArray(value)) {
+			if (value.length === 0) return true;
+			return value.includes(row.getValue(columnId));
+		}
+
+		// Rank the item
+		const itemRank = rankItem(row.getValue(columnId), value);
+
+		// Store the itemRank info
+		addMeta({
+			itemRank
+		});
+
+		// Return if the item should be filtered in/out
+		return itemRank.passed;
+	};
 
 	const defaultColumns: ColumnDef<Invoice>[] = [
 		{
@@ -37,13 +59,15 @@
 		{
 			accessorKey: 'country',
 			header: 'Country',
-			cell: (info) => info.getValue()
+			cell: (info) => info.getValue(),
+			filterFn: globalFilterFn
 		},
 		{
 			accessorFn: (row) => (row.state ? row.state.toString() : '-'),
 			id: 'state',
 			header: 'State',
-			cell: (info) => info.getValue()
+			cell: (info) => info.getValue(),
+			filterFn: globalFilterFn
 		},
 		{
 			accessorKey: 'city',
@@ -65,19 +89,6 @@
 
 	let globalFilter = '';
 
-	const globalFilterFn: FilterFn<any> = (row, columnId, value, addMeta) => {
-		// Rank the item
-		const itemRank = rankItem(row.getValue(columnId), value);
-
-		// Store the itemRank info
-		addMeta({
-			itemRank
-		});
-
-		// Return if the item should be filtered in/out
-		return itemRank.passed;
-	};
-
 	const options = writable<TableOptions<Invoice>>({
 		data: data.invoices,
 		columns: defaultColumns,
@@ -85,6 +96,9 @@
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		globalFilterFn: globalFilterFn,
+		getFacetedRowModel: getFacetedRowModel(),
+		getFacetedUniqueValues: getFacetedUniqueValues(),
+		getFacetedMinMaxValues: getFacetedMinMaxValues(),
 		state: {
 			globalFilter
 		},
@@ -116,56 +130,87 @@
 	}
 
 	const noTypeCheck = (x: any) => x;
+
+	let headerGroups = $table.getHeaderGroups();
 </script>
 
 <div class="px-4">
 	<h1 class="is-size-1">Invoices</h1>
 
-	<input
-		{...noTypeCheck(null)}
-		type="search"
-		class="input"
-		on:keyup={handleSearch}
-		on:search={handleSearch}
-		placeholder="Search..."
-	/>
-	<table class="table">
-		<thead>
-			{#each $table.getHeaderGroups() as headerGroup}
-				<tr>
-					{#each headerGroup.headers as header}
-						<th colSpan={header.colSpan}>
-							{#if !header.isPlaceholder}
-								<button
-									class="button is-white"
-									class:is-disabled={!header.column.getCanSort()}
-									disabled={!header.column.getCanSort()}
-									on:click={header.column.getToggleSortingHandler()}
-								>
-									<svelte:component
-										this={flexRender(header.column.columnDef.header, header.getContext())}
-									/>
-									<span class="pl-1">
-										{getSortSymbol(header.column.getIsSorted())}
-									</span>
-								</button>
-							{/if}
-						</th>
-					{/each}
-				</tr>
-			{/each}
-		</thead>
+	<div class="columns">
+		<div class="column is-one-fifth">
+			<h2 class="is-size-3 mb-3">Filters</h2>
 
-		<tbody>
-			{#each $table.getRowModel().rows as row}
-				<tr>
-					{#each row.getVisibleCells() as cell}
-						<td>
-							<svelte:component this={flexRender(cell.column.columnDef.cell, cell.getContext())} />
-						</td>
-					{/each}
-				</tr>
+			{#each headerGroups as headerGroup}
+				{#each headerGroup.headers as header}
+					{#if header.column.id === 'country'}
+						<details open>
+							<summary>
+								<h3 class="has-text-weight-semibold is-inline-block">Countries</h3></summary
+							>
+
+							<FacetCheckboxes table={$table} column={header.column} />
+						</details>
+					{:else if header.column.id === 'state'}
+						<details open>
+							<summary> <h3 class="has-text-weight-semibold is-inline-block">State</h3></summary>
+
+							<FacetCheckboxes table={$table} column={header.column} />
+						</details>
+					{/if}
+				{/each}
 			{/each}
-		</tbody>
-	</table>
+		</div>
+		<div class="column">
+			<input
+				{...noTypeCheck(null)}
+				type="search"
+				class="input"
+				on:keyup={handleSearch}
+				on:search={handleSearch}
+				placeholder="Search..."
+			/>
+			<table class="table">
+				<thead>
+					{#each headerGroups as headerGroup}
+						<tr>
+							{#each headerGroup.headers as header}
+								<th colSpan={header.colSpan}>
+									{#if !header.isPlaceholder}
+										<button
+											class="button is-white"
+											class:is-disabled={!header.column.getCanSort()}
+											disabled={!header.column.getCanSort()}
+											on:click={header.column.getToggleSortingHandler()}
+										>
+											<svelte:component
+												this={flexRender(header.column.columnDef.header, header.getContext())}
+											/>
+											<span class="pl-1">
+												{getSortSymbol(header.column.getIsSorted())}
+											</span>
+										</button>
+									{/if}
+								</th>
+							{/each}
+						</tr>
+					{/each}
+				</thead>
+
+				<tbody>
+					{#each $table.getRowModel().rows as row}
+						<tr>
+							{#each row.getVisibleCells() as cell}
+								<td>
+									<svelte:component
+										this={flexRender(cell.column.columnDef.cell, cell.getContext())}
+									/>
+								</td>
+							{/each}
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	</div>
 </div>
