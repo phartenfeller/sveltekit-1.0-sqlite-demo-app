@@ -12,6 +12,9 @@
 		<div class="navbar-menu">
 			<div class="navbar-start">
 				<a href="/" class="navbar-item">Home</a>
+				{#if data?.username}
+					<a href="/invoices" class="navbar-item">Invoices</a>
+				{/if}
 			</div>
 		</div>
 

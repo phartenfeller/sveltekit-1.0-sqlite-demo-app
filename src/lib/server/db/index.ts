@@ -5,6 +5,7 @@ import type {
 	AlbumImage,
 	AlbumTrack,
 	Genre,
+	Invoice,
 	SessionInfo,
 	SessionInfoCache,
 	Track,
@@ -368,4 +369,25 @@ export function otherAlbumsOfArtist(artistId: number, albumId: number): Album[] 
 	const stmnt = db.prepare(sql);
 	const rows = stmnt.all({ artistId, albumId });
 	return rows as Album[];
+}
+
+export function getInvoices() {
+	const sql = `
+	select i.InvoiceId as "id"
+	, i.InvoiceDate as "date"
+	, i.BillingAddress as "address"
+	, i.BillingCity as "city"
+	, i.BillingState as "state"
+	, i.BillingCountry as "country"
+	, i.BillingPostalCode as "postalCode"
+	, i.Total as "total"
+	, c.FirstName || ' ' || c.LastName as "customer"
+from invoices i
+join customers c
+ on i.CustomerId = c.CustomerId
+ order by i.InvoiceId desc
+ `;
+	const stmnt = db.prepare(sql);
+	const rows = stmnt.all();
+	return rows as Invoice[];
 }

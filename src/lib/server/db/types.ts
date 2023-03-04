@@ -48,3 +48,15 @@ export type AlbumImage = {
 	size: number;
 	data: Blob;
 };
+
+export type Invoice = {
+	id: number;
+	date: string;
+	address: string;
+	city: string;
+	state: string;
+	country: string;
+	postalCode: string;
+	total: number;
+	customer: string;
+};
