@@ -10,6 +10,7 @@
 		getFacetedRowModel,
 		getFacetedUniqueValues,
 		getFacetedMinMaxValues,
+		getPaginationRowModel,
 		type SortDirection,
 		type FilterFn
 	} from '@tanstack/svelte-table';
@@ -100,8 +101,13 @@
 		getFacetedRowModel: getFacetedRowModel(),
 		getFacetedUniqueValues: getFacetedUniqueValues(),
 		getFacetedMinMaxValues: getFacetedMinMaxValues(),
+		getPaginationRowModel: getPaginationRowModel(),
 		state: {
-			globalFilter
+			globalFilter,
+			pagination: {
+				pageSize: 7,
+				pageIndex: 0
+			}
 		},
 		enableGlobalFilter: true
 	});
@@ -121,6 +127,37 @@
 		});
 	}
 
+	function setCurrentPage(page: number) {
+		options.update((old: any) => {
+			return {
+				...old,
+				state: {
+					...old.state,
+					pagination: {
+						...old.state?.pagination,
+						pageIndex: page
+					}
+				}
+			};
+		});
+	}
+
+	function setPageSize(e: Event) {
+		const target = e.target as HTMLInputElement;
+		options.update((old: any) => {
+			return {
+				...old,
+				state: {
+					...old.state,
+					pagination: {
+						...old.state?.pagination,
+						pageSize: parseInt(target.value)
+					}
+				}
+			};
+		});
+	}
+
 	let timer: NodeJS.Timeout;
 	function handleSearch(e: Event) {
 		clearTimeout(timer);
@@ -128,6 +165,11 @@
 			const target = e.target as HTMLInputElement;
 			setGlobalFilter(target.value);
 		}, 300);
+	}
+
+	function handleCurrPageInput(e: Event) {
+		const target = e.target as HTMLInputElement;
+		setCurrentPage(parseInt(target.value) - 1);
 	}
 
 	const noTypeCheck = (x: any) => x;
@@ -218,6 +260,67 @@
 					{/each}
 				</tbody>
 			</table>
+			<div class="is-flex is-align-items-center">
+				<button
+					class="button is-white"
+					on:click={() => setCurrentPage(0)}
+					class:is-disabled={!$table.getCanPreviousPage()}
+					disabled={!$table.getCanPreviousPage()}
+				>
+					{'<<'}
+				</button>
+				<button
+					class="button is-white"
+					on:click={() => setCurrentPage($table.getState().pagination.pageIndex - 1)}
+					class:is-disabled={!$table.getCanPreviousPage()}
+					disabled={!$table.getCanPreviousPage()}
+				>
+					{'<'}
+				</button>
+				<span> Page </span>
+				<input
+					type="number"
+					value={$table.getState().pagination.pageIndex + 1}
+					min={0}
+					max={$table.getPageCount() - 1}
+					on:change={handleCurrPageInput}
+					class="mx-1"
+				/>
+				<span>
+					{' '}of{' '}
+					{$table.getPageCount()}
+				</span>
+				<button
+					class="button is-white"
+					on:click={() => setCurrentPage($table.getState().pagination.pageIndex + 1)}
+					class:is-disabled={!$table.getCanNextPage()}
+					disabled={!$table.getCanNextPage()}
+				>
+					{'>'}
+				</button>
+				<button
+					class="button is-white"
+					on:click={() => setCurrentPage($table.getPageCount() - 1)}
+					class:is-disabled={!$table.getCanNextPage()}
+					disabled={!$table.getCanNextPage()}
+				>
+					{'>>'}
+				</button>
+				<span class="mx-2 has-text-weight-semibold">|</span>
+				<select
+					value={$table.getState().pagination.pageSize}
+					on:change={setPageSize}
+					class="select"
+				>
+					{#each [7, 10, 25, 50] as pageSize}
+						<option value={pageSize}>
+							Show {pageSize}
+						</option>
+					{/each}
+				</select>
+				<span class="mx-2 has-text-weight-semibold">|</span>
+				<span>{$table.getPrePaginationRowModel().rows.length} total Rows</span>
+			</div>
 		</div>
 	</div>
 </div>
