@@ -17,6 +17,7 @@
 	import { writable } from 'svelte/store';
 	import type { ColumnDef, TableOptions } from '@tanstack/svelte-table';
 	import FacetCheckboxes from '$lib/components/tanstackTable/FacetCheckboxes.svelte';
+	import FacetMinMax from '$lib/components/tanstackTable/FacetMinMax.svelte';
 
 	export let data: PageData;
 
@@ -156,6 +157,12 @@
 							<summary> <h3 class="has-text-weight-semibold is-inline-block">State</h3></summary>
 
 							<FacetCheckboxes table={$table} column={header.column} />
+						</details>
+					{:else if header.column.id === 'total'}
+						<details open>
+							<summary> <h3 class="has-text-weight-semibold is-inline-block">Total</h3></summary>
+
+							<FacetMinMax table={$table} column={header.column} />
 						</details>
 					{/if}
 				{/each}
