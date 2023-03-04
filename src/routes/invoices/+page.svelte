@@ -7,8 +7,10 @@
 		getCoreRowModel,
 		getSortedRowModel,
 		getFilteredRowModel,
-		type SortDirection
+		type SortDirection,
+		type FilterFn
 	} from '@tanstack/svelte-table';
+	import { rankItem } from '@tanstack/match-sorter-utils';
 	import { writable } from 'svelte/store';
 	import type { ColumnDef, TableOptions } from '@tanstack/svelte-table';
 
@@ -22,8 +24,9 @@
 
 	const defaultColumns: ColumnDef<Invoice>[] = [
 		{
-			accessorFn: (row) => row.id.toString(),
-			header: 'ID'
+			accessorKey: 'id',
+			header: 'ID',
+			cell: (info) => (info.getValue() as number).toString()
 		},
 		{
 			accessorKey: 'date',
@@ -54,12 +57,26 @@
 			enableSorting: false
 		},
 		{
-			accessorFn: (row) => numFormat.format(row.total),
-			header: 'Total'
+			accessorKey: 'total',
+			header: 'Total',
+			cell: (info) => numFormat.format(info.getValue() as number)
 		}
 	];
 
 	let globalFilter = '';
+
+	const globalFilterFn: FilterFn<any> = (row, columnId, value, addMeta) => {
+		// Rank the item
+		const itemRank = rankItem(row.getValue(columnId), value);
+
+		// Store the itemRank info
+		addMeta({
+			itemRank
+		});
+
+		// Return if the item should be filtered in/out
+		return itemRank.passed;
+	};
 
 	const options = writable<TableOptions<Invoice>>({
 		data: data.invoices,
@@ -67,10 +84,14 @@
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
+		globalFilterFn: globalFilterFn,
 		state: {
 			globalFilter
-		}
+		},
+		enableGlobalFilter: true
 	});
+
+	const table = createSvelteTable(options);
 
 	function setGlobalFilter(filter: string) {
 		globalFilter = filter;
@@ -84,8 +105,6 @@
 			};
 		});
 	}
-
-	const table = createSvelteTable(options);
 
 	let timer: NodeJS.Timeout;
 	function handleSearch(e: Event) {
@@ -103,12 +122,12 @@
 	<h1 class="is-size-1">Invoices</h1>
 
 	<input
+		{...noTypeCheck(null)}
 		type="search"
 		class="input"
 		on:keyup={handleSearch}
 		on:search={handleSearch}
 		placeholder="Search..."
-		{...noTypeCheck(null)}
 	/>
 	<table class="table">
 		<thead>

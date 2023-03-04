@@ -15,6 +15,7 @@
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/adapter-node": "^1.2.1",
 		"@sveltejs/kit": "^1.9.3",
+		"@tanstack/match-sorter-utils": "^8.7.6",
 		"@tanstack/svelte-table": "^8.7.9",
 		"@types/bcrypt": "^5.0.0",
 		"@types/better-sqlite3": "^7.6.3",
