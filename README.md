@@ -9,6 +9,7 @@ Code from following YouTube tutorials:
   - [Lazy Loading for slowly loading pages in SvelteKit](https://youtu.be/7Kl4sKez1bs)
   - [Upload, Store and Retrieve Images in SvelteKit (with SQLite)](https://youtu.be/OLg6RwESnSo)
   - [Generate a PDF with pdfmake (from SvelteKit)](https://youtu.be/gS1wlOdRLAk)
+  - [Interactive Tables in SvelteKit with TanStack Table](https://youtu.be/-Zuo3UWjjI8)
 
 Full Playlist: [SvelteKit](https://www.youtube.com/playlist?list=PLIyDDWd5rhaYwAiXQyonufcZgc_xOMtId)
 
