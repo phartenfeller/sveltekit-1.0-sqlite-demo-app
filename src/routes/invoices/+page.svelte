@@ -19,6 +19,7 @@
 	import type { ColumnDef, TableOptions } from '@tanstack/svelte-table';
 	import FacetCheckboxes from '$lib/components/tanstackTable/FacetCheckboxes.svelte';
 	import FacetMinMax from '$lib/components/tanstackTable/FacetMinMax.svelte';
+	import exportExcel from '$lib/excelExport';
 
 	export let data: PageData;
 
@@ -56,7 +57,7 @@
 			accessorKey: 'date',
 			id: 'Date',
 			cell: (info) => new Date(info.getValue() as string).toLocaleString(),
-			header: () => 'Date'
+			header: 'Date'
 		},
 		{
 			accessorKey: 'country',
@@ -175,10 +176,19 @@
 	const noTypeCheck = (x: any) => x;
 
 	let headerGroups = $table.getHeaderGroups();
+
+	function clickDownload() {
+		exportExcel($table, 'invoices', true);
+	}
 </script>
 
 <div class="px-4">
-	<h1 class="is-size-1">Invoices</h1>
+	<div class="is-flex is-justify-content-space-between is-align-items-center">
+		<h1 class="is-size-1">Invoices</h1>
+		<div>
+			<button class="button" on:click={clickDownload}>XLSX</button>
+		</div>
+	</div>
 
 	<div class="columns">
 		<div class="column is-one-fifth">
