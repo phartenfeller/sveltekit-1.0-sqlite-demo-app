@@ -10,6 +10,7 @@ Code from following YouTube tutorials:
   - [Upload, Store and Retrieve Images in SvelteKit (with SQLite)](https://youtu.be/OLg6RwESnSo)
   - [Generate a PDF with pdfmake (from SvelteKit)](https://youtu.be/gS1wlOdRLAk)
   - [Interactive Tables in SvelteKit with TanStack Table](https://youtu.be/-Zuo3UWjjI8)
+  - [Export Table to XLSX and CSV with exceljs](https://youtu.be/xzdgUm2Ccbk)
 
 Full Playlist: [SvelteKit](https://www.youtube.com/playlist?list=PLIyDDWd5rhaYwAiXQyonufcZgc_xOMtId)
 
