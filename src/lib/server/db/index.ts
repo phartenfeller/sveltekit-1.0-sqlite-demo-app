@@ -391,3 +391,63 @@ join customers c
 	const rows = stmnt.all();
 	return rows as Invoice[];
 }
+
+export function getInvoiceEmailDetails(invoiceId: number) {
+	const sql = `
+	select i.InvoiceId as "id"
+	, i.InvoiceDate as "date"
+	, i.BillingAddress as "address"
+	, i.BillingCity as "city"
+	, i.BillingState as "state"
+	, i.BillingCountry as "country"
+	, i.BillingPostalCode as "postalCode"
+	, i.Total as "total"
+	, c.FirstName || ' ' || c.LastName as "customer"
+	, c.Email as "email"
+from invoices i
+join customers c
+ on i.CustomerId = c.CustomerId
+ where i.InvoiceId = $invoiceId
+	`;
+
+	let stmnt = db.prepare(sql);
+	const order = stmnt.get({ invoiceId }) as {
+		id: number;
+		date: string;
+		address: string;
+		city: string;
+		state: string;
+		country: string;
+		postalCode: string;
+		total: number;
+		customer: string;
+		email: string;
+	};
+
+	const sql2 = `
+	select t.Name as "track"
+	, ii.UnitPrice as "price"
+	, ii.Quantity as "quantity"
+	, a.Title as "album"
+	, ar.Name as "artist"
+from invoice_items ii
+join tracks t
+ on ii.TrackId = t.TrackId
+join albums a
+ on t.AlbumId = a.AlbumId
+join artists ar
+ on a.ArtistId = ar.ArtistId
+where ii.InvoiceId = $invoiceId
+	`;
+
+	stmnt = db.prepare(sql2);
+	const tracks = stmnt.all({ invoiceId }) as {
+		track: string;
+		price: number;
+		quantity: number;
+		album: string;
+		artist: string;
+	}[];
+
+	return { order, tracks };
+}

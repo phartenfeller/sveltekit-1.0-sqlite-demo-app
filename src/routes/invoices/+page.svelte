@@ -12,7 +12,8 @@
 		getFacetedMinMaxValues,
 		getPaginationRowModel,
 		type SortDirection,
-		type FilterFn
+		type FilterFn,
+		renderComponent
 	} from '@tanstack/svelte-table';
 	import { rankItem } from '@tanstack/match-sorter-utils';
 	import { writable } from 'svelte/store';
@@ -20,6 +21,7 @@
 	import FacetCheckboxes from '$lib/components/tanstackTable/FacetCheckboxes.svelte';
 	import FacetMinMax from '$lib/components/tanstackTable/FacetMinMax.svelte';
 	import exportExcel from '$lib/excelExport';
+	import InvEmailBtn from './invEmailBtn.svelte';
 
 	export let data: PageData;
 
@@ -87,6 +89,10 @@
 			accessorKey: 'total',
 			header: 'Total',
 			cell: (info) => numFormat.format(info.getValue() as number)
+		},
+		{
+			header: 'Mail Receipt',
+			cell: (info) => renderComponent(InvEmailBtn, { id: parseInt(info.row.getValue('id')) })
 		}
 	];
 
