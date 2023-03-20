@@ -11,6 +11,7 @@ Code from following YouTube tutorials:
   - [Generate a PDF with pdfmake (from SvelteKit)](https://youtu.be/gS1wlOdRLAk)
   - [Interactive Tables in SvelteKit with TanStack Table](https://youtu.be/-Zuo3UWjjI8)
   - [Export Table to XLSX and CSV with exceljs](https://youtu.be/xzdgUm2Ccbk)
+  - [MailCrab: Mock Mailserver for development](https://youtu.be/w-aitQBsINc)
 
 Full Playlist: [SvelteKit](https://www.youtube.com/playlist?list=PLIyDDWd5rhaYwAiXQyonufcZgc_xOMtId)
 
@@ -22,6 +23,8 @@ Full Playlist: [SvelteKit](https://www.youtube.com/playlist?list=PLIyDDWd5rhaYwA
 - Username and Password for login is `philipp`
 
 ## Docker
+
+### Build and Run App
 
 Build Container:
 
@@ -37,3 +40,11 @@ docker run -d -p 3000:3000 \
   --rm --name sveltekit-sqlite \
   sveltekit-sqlite-img
 ```
+
+### MailCrab
+
+```sh
+docker run --rm -p 1080:1080 -p 1025:1025 marlonb/mailcrab:latest
+```
+
+More info: https://github.com/tweedegolf/mailcrab
