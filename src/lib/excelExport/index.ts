@@ -1,6 +1,7 @@
 import type { Table } from '@tanstack/svelte-table';
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver';
+import type { InvoiceTableColMeta } from '../../routes/invoices/types';
 
 export default async function exportExcel(
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -18,7 +19,9 @@ export default async function exportExcel(
 	}
 
 	ws.columns = lastHeaderGroup.headers
-		.filter((h) => h.column.getIsVisible())
+		.filter(
+			(h) => h.column.getIsVisible() && !(h.column.columnDef.meta as InvoiceTableColMeta)?.noExport
+		)
 		.map((header) => {
 			return {
 				header: header.column.columnDef.header as string,
@@ -31,7 +34,10 @@ export default async function exportExcel(
 
 	exportRows.forEach((row) => {
 		const cells = row.getVisibleCells();
-		const values = cells.map((cell) => cell.getValue() ?? '');
+		const exportCells = cells.filter(
+			(cell) => !(cell.column.columnDef.meta as InvoiceTableColMeta)?.noExport
+		);
+		const values = exportCells.map((cell) => cell.getValue() ?? '');
 		console.log('values', values);
 		ws.addRow(values);
 	});

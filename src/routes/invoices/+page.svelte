@@ -22,6 +22,7 @@
 	import FacetMinMax from '$lib/components/tanstackTable/FacetMinMax.svelte';
 	import exportExcel from '$lib/excelExport';
 	import InvEmailBtn from './invEmailBtn.svelte';
+	import type { InvoiceTableColMeta } from './types';
 
 	export let data: PageData;
 
@@ -92,7 +93,10 @@
 		},
 		{
 			header: 'Mail Receipt',
-			cell: (info) => renderComponent(InvEmailBtn, { id: parseInt(info.row.getValue('id')) })
+			cell: (info) => renderComponent(InvEmailBtn, { id: parseInt(info.row.getValue('id')) }),
+			meta: {
+				noExport: true
+			} as InvoiceTableColMeta
 		}
 	];
 
