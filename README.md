@@ -12,6 +12,7 @@ Code from following YouTube tutorials:
   - [Interactive Tables in SvelteKit with TanStack Table](https://youtu.be/-Zuo3UWjjI8)
   - [Export Table to XLSX and CSV with exceljs](https://youtu.be/xzdgUm2Ccbk)
   - [MailCrab: Mock Mailserver for development](https://youtu.be/w-aitQBsINc)
+  - [Server-side filtered, paginated and sorted Table in SvelteKit (Part 1/2)](https://youtu.be/pjV3rCBBT_Q)
 
 Full Playlist: [SvelteKit](https://www.youtube.com/playlist?list=PLIyDDWd5rhaYwAiXQyonufcZgc_xOMtId)
 
