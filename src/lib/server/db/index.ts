@@ -6,6 +6,8 @@ import type {
 	AlbumTrack,
 	Genre,
 	Invoice,
+	PlaylistTrack,
+	PlaylistTrackResponse,
 	SessionInfo,
 	SessionInfoCache,
 	Track,
@@ -204,7 +206,7 @@ export async function checkUserCredentials(username: string, password: string): 
    where username = $username
 `;
 	const stmnt = db.prepare(sql);
-	const row = stmnt.get({ username });
+	const row = stmnt.get({ username }) as { password: string };
 	if (row) {
 		return bcrypt.compare(password, row.password);
 	} else {
@@ -220,7 +222,7 @@ export function getUserRoles(username: string): string[] {
    where username = $username
 `;
 	const stmnt = db.prepare(sql);
-	const row = stmnt.get({ username });
+	const row = stmnt.get({ username }) as { roles: string };
 	if (row) {
 		return row.roles.split(':');
 	}
@@ -340,7 +342,7 @@ export function getAlbumImage(albumId: number, filename: string): AlbumImage {
 	`;
 
 	const stmnt = db.prepare(sql);
-	const row = stmnt.get({ albumId, filename });
+	const row = stmnt.get({ albumId, filename }) as AlbumImage;
 
 	const img: AlbumImage = {
 		filename: row.filename,
@@ -450,4 +452,78 @@ where ii.InvoiceId = $invoiceId
 	}[];
 
 	return { order, tracks };
+}
+
+export type QueryPlaylistTracksArgs = {
+	sort?: { col: string; dir: string };
+	pagination: { page: number; pageSize: number };
+	search?: string;
+	colFilters?: { [key: string]: string };
+};
+
+export function queryPlaylistTracks({
+	sort,
+	pagination,
+	search,
+	colFilters
+}: QueryPlaylistTracksArgs): PlaylistTrackResponse {
+	let sql = `
+	select row_number() over () as "rowId"
+	, p.PlaylistId as "playlistId"
+	, p.name || ' (#' || p.PlaylistId || ')' as "playlistName"
+	, t.name as "trackName"
+	, a.Name as "artistName"
+	, g.Name as "genre"
+from playlist_track pt
+join playlists p on p.PlaylistId = pt.PlaylistId
+join tracks t on pt.TrackId = t.TrackId
+join albums al on t.AlbumId = al.AlbumId
+join artists a on al.ArtistId = a.ArtistId
+left join genres g on t.GenreId = g.GenreId
+#WHERE#
+#ORDER#
+#LIMIT#
+`;
+
+	console.log('colFilters', colFilters);
+
+	if (sort) {
+		sql = sql.replace('#ORDER#', `order by ${sort.col} ${sort.dir}`);
+	} else {
+		sql = sql.replace('#ORDER#', '');
+	}
+
+	const whereClauses: string[] = [];
+
+	if (search) {
+		whereClauses.push(
+			`( lower(p.name) like '%${search.toLowerCase()}%' or lower(t.name) like '%${search.toLowerCase()}%' or lower(a.name) like '%${search.toLowerCase()}%' or lower(g.name) like '%${search.toLowerCase()}%' )`
+		);
+	}
+
+	if (colFilters) {
+		for (const [key, value] of Object.entries(colFilters)) {
+			if (value) {
+				whereClauses.push(`lower(${key}) like '%${value.toLowerCase()}%'`);
+			}
+		}
+	}
+
+	const where = whereClauses.length > 0 ? 'where ' + whereClauses.join(' and ') : '';
+	sql = sql.replace('#WHERE#', where);
+
+	const withPagination = sql.replace(
+		'#LIMIT#',
+		`limit ${pagination.pageSize} offset ${(pagination.page - 1) * pagination.pageSize}`
+	);
+	const withoutPagination = sql.replace('#LIMIT#', '');
+
+	const stmnt = db.prepare(withPagination);
+	const rows = stmnt.all() as PlaylistTrack[];
+
+	const countSql = `select count(*) as "count" from (${withoutPagination})`;
+	const stmnt2 = db.prepare(countSql);
+	const countRes = stmnt2.get() as { count: number };
+
+	return { rows, count: countRes.count };
 }

@@ -60,3 +60,17 @@ export type Invoice = {
 	total: number;
 	customer: string;
 };
+
+export type PlaylistTrack = {
+	rowId: number;
+	playlistId: number;
+	playlistName: string;
+	trackName: string;
+	artistName: string;
+	genre?: string;
+};
+
+export type PlaylistTrackResponse = {
+	rows: PlaylistTrack[];
+	count: number;
+};

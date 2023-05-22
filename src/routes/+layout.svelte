@@ -14,6 +14,7 @@
 				<a href="/" class="navbar-item">Home</a>
 				{#if data?.username}
 					<a href="/invoices" class="navbar-item">Invoices</a>
+					<a href="/playlistTracks" class="navbar-item">Playlists</a>
 				{/if}
 			</div>
 		</div>
