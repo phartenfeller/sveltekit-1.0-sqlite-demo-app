@@ -13,6 +13,8 @@ Code from following YouTube tutorials:
   - [Export Table to XLSX and CSV with exceljs](https://youtu.be/xzdgUm2Ccbk)
   - [MailCrab: Mock Mailserver for development](https://youtu.be/w-aitQBsINc)
   - [Server-side filtered, paginated and sorted Table in SvelteKit (Part 1/2)](https://youtu.be/pjV3rCBBT_Q)
+  - [Server-side filtered, paginated and sorted Table in SvelteKit (Part 2/2)](https://youtu.be/VgCU0cVWgJE)
+  - [SvelteKit TanStack Table edit row (+ custom table components)](https://youtu.be/D_xoOSYzJ7U)
 
 Full Playlist: [SvelteKit](https://www.youtube.com/playlist?list=PLIyDDWd5rhaYwAiXQyonufcZgc_xOMtId)
 

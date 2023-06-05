@@ -394,6 +394,20 @@ join customers c
 	return rows as Invoice[];
 }
 
+export function updateInvoice(invoice: Invoice) {
+	const sql = `update invoices
+	  set BillingAddress = $address,
+		    Total = $total
+			where InvoiceId = $id`;
+
+	const stmnt = db.prepare(sql);
+	stmnt.run({
+		id: invoice.id,
+		address: invoice.address,
+		total: invoice.total
+	});
+}
+
 export function getInvoiceEmailDetails(invoiceId: number) {
 	const sql = `
 	select i.InvoiceId as "id"

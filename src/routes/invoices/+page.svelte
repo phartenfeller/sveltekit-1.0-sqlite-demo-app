@@ -23,6 +23,10 @@
 	import exportExcel from '$lib/excelExport';
 	import InvEmailBtn from './invEmailBtn.svelte';
 	import type { InvoiceTableColMeta } from './types';
+	import EditRowBtn from './editRowBtn.svelte';
+	import EditRowInputs from './editRowInputs.svelte';
+	import { resetTableChanges, rowChanges } from './stores';
+	import { invalidate } from '$app/navigation';
 
 	export let data: PageData;
 
@@ -83,13 +87,25 @@
 		{
 			accessorKey: 'address',
 			header: 'Address',
-			cell: (info) => info.getValue(),
-			enableSorting: false
+			enableSorting: false,
+			cell: (info) =>
+				renderComponent(EditRowInputs, {
+					id: parseInt(info.row.getValue('id')),
+					colId: 'address',
+					editT: 'text',
+					initVal: info.getValue()
+				})
 		},
 		{
 			accessorKey: 'total',
 			header: 'Total',
-			cell: (info) => numFormat.format(info.getValue() as number)
+			cell: (info) =>
+				renderComponent(EditRowInputs, {
+					id: parseInt(info.row.getValue('id')),
+					colId: 'total',
+					editT: 'number',
+					initVal: numFormat.format(info.getValue() as number)
+				})
 		},
 		{
 			header: 'Mail Receipt',
@@ -97,6 +113,11 @@
 			meta: {
 				noExport: true
 			} as InvoiceTableColMeta
+		},
+		{
+			id: 'edit',
+			header: 'Edit',
+			cell: (info) => renderComponent(EditRowBtn, { row: info.row.original })
 		}
 	];
 
@@ -190,6 +211,43 @@
 	function clickDownload() {
 		exportExcel($table, 'invoices', true);
 	}
+
+	let rowsInEditCount = 0;
+	let currChanges = {};
+	rowChanges.subscribe((val) => {
+		currChanges = val;
+		rowsInEditCount = Object.keys(val).length;
+	});
+
+	async function clickSave() {
+		try {
+			const res = await fetch('/api/invoices/saveChanges', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(currChanges)
+			});
+			const resData = await res.json();
+
+			if (!resData.ok) {
+				alert('Error saving changes' + resData.message);
+				return;
+			}
+		} catch (err) {
+			alert('Error saving changes');
+			return;
+		}
+
+		resetTableChanges();
+		await invalidate('invoice:load');
+		options.update((old) => {
+			return {
+				...old,
+				data: data.invoices
+			};
+		});
+	}
 </script>
 
 <div class="px-4">
@@ -197,6 +255,7 @@
 		<h1 class="is-size-1">Invoices</h1>
 		<div>
 			<button class="button" on:click={clickDownload}>XLSX</button>
+			<button class="button" on:click={clickSave} disabled={rowsInEditCount === 0}>Save</button>
 		</div>
 	</div>
 

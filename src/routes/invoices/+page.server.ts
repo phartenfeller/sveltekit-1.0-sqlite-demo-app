@@ -2,7 +2,8 @@ import { getInvoices } from '$lib/server/db';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load = (({ locals }) => {
+export const load = (({ locals, depends }) => {
+	depends('invoice:load');
 	if (!locals?.roles?.includes('admin')) {
 		throw error(404, 'Unauthorized');
 	}
