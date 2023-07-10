@@ -16,6 +16,7 @@
 					<a href="/invoices" class="navbar-item">Invoices</a>
 					<a href="/playlistTracks" class="navbar-item">Playlists</a>
 				{/if}
+				<a href="/about" class="navbar-item">About</a>
 			</div>
 		</div>
 

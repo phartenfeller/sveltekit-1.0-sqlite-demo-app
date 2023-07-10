@@ -15,6 +15,7 @@ Code from following YouTube tutorials:
   - [Server-side filtered, paginated and sorted Table in SvelteKit (Part 1/2)](https://youtu.be/pjV3rCBBT_Q)
   - [Server-side filtered, paginated and sorted Table in SvelteKit (Part 2/2)](https://youtu.be/VgCU0cVWgJE)
   - [SvelteKit TanStack Table edit row (+ custom table components)](https://youtu.be/D_xoOSYzJ7U)
+  - [Markdown in SvelteKit with custom Components: mdsvex](https://youtu.be/VJFkyGd0FEA)
 
 Full Playlist: [SvelteKit](https://www.youtube.com/playlist?list=PLIyDDWd5rhaYwAiXQyonufcZgc_xOMtId)
 
