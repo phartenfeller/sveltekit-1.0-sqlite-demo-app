@@ -1,7 +1,7 @@
 import type { Table } from '@tanstack/svelte-table';
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver';
-import type { InvoiceTableColMeta } from '../../routes/invoices/types';
+import type { InvoiceTableColMeta } from '../../routes/admin/invoices/types';
 
 export default async function exportExcel(
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

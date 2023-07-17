@@ -13,9 +13,17 @@
 			<div class="navbar-start">
 				<a href="/" class="navbar-item">Home</a>
 				{#if data?.username}
-					<a href="/invoices" class="navbar-item">Invoices</a>
-					<a href="/playlistTracks" class="navbar-item">Playlists</a>
+					<div class="navbar-item has-dropdown is-hoverable">
+						<span class="navbar-link"> Admin </span>
+
+						<div class="navbar-dropdown">
+							<a href="/admin/invoices" class="navbar-item">Invoices</a>
+							<a href="/admin/playlistTracks" class="navbar-item">Playlists</a>
+							<a href="/admin/charts_css" class="navbar-item">Charts.css</a>
+						</div>
+					</div>
 				{/if}
+
 				<a href="/about" class="navbar-item">About</a>
 			</div>
 		</div>
