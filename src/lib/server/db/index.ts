@@ -4,13 +4,17 @@ import type {
 	Album,
 	AlbumImage,
 	AlbumTrack,
+	CustomersByCountry,
 	Genre,
+	GenreSales,
 	Invoice,
 	PlaylistTrack,
 	PlaylistTrackResponse,
+	SalesTotalByMonth,
 	SessionInfo,
 	SessionInfoCache,
 	Track,
+	TracksByMediaType,
 	TracksGridSaveData
 } from './types';
 import bcrypt from 'bcrypt';
@@ -540,4 +544,69 @@ left join genres g on t.GenreId = g.GenreId
 	const countRes = stmnt2.get() as { count: number };
 
 	return { rows, count: countRes.count };
+}
+
+export function getChartsData() {
+	let sql = `
+	SELECT genres.Name as "genre", round(SUM(invoice_items.Quantity * invoice_items.UnitPrice)) AS "salesTotal"
+	  FROM genres
+  	JOIN tracks ON genres.GenreId = tracks.GenreId
+	  JOIN invoice_items ON tracks.TrackId = invoice_items.TrackId
+	 GROUP BY genres.GenreId
+	 order by "salesTotal" desc
+	 limit 5
+	;	
+	`;
+
+	let stmnt = db.prepare(sql);
+	const genreSales = stmnt.all() as GenreSales[];
+
+	sql = `
+	SELECT country as "country", COUNT(*) as "customerCount"
+	  FROM customers
+	 GROUP BY Country
+	 order by "customerCount" desc
+	 limit 5;
+	`;
+
+	stmnt = db.prepare(sql);
+	const customerCount = stmnt.all() as CustomersByCountry[];
+
+	sql = `
+	SELECT media_types.Name as "mediaType", COUNT(*) as "trackCount"
+  	FROM media_types
+	  JOIN tracks ON media_types.MediaTypeId = tracks.MediaTypeId
+	 GROUP BY media_types.MediaTypeId;
+	`;
+
+	stmnt = db.prepare(sql);
+	const tracksByMediaType = stmnt.all() as TracksByMediaType[];
+
+	sql = `
+	SELECT  CASE strftime('%m', InvoiceDate)
+	WHEN '01' THEN 'Jan'
+	WHEN '02' THEN 'Feb'
+	WHEN '03' THEN 'Mar'
+	WHEN '04' THEN 'Apr'
+	WHEN '05' THEN 'May'
+	WHEN '06' THEN 'Jun'
+	WHEN '07' THEN 'Jul'
+	WHEN '08' THEN 'Aug'
+	WHEN '09' THEN 'Sep'
+	WHEN '10' THEN 'Oct'
+	WHEN '11' THEN 'Nov'
+	WHEN '12' THEN 'Dec'
+END as "month", round(SUM(Total)) as "salesTotal"
+FROM invoices
+where cast(strftime('%Y', InvoiceDate) as number) > 2008
+and invoiceid % 2 = 1
+GROUP BY Month
+ORDER BY strftime('%m', InvoiceDate)
+	;
+	`;
+
+	stmnt = db.prepare(sql);
+	const salesTotalByMonth = stmnt.all() as SalesTotalByMonth[];
+
+	return { genreSales, customerCount, tracksByMediaType, salesTotalByMonth };
 }

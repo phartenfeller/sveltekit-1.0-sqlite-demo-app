@@ -74,3 +74,11 @@ export type PlaylistTrackResponse = {
 	rows: PlaylistTrack[];
 	count: number;
 };
+
+export type GenreSales = { genre: string; salesTotal: number };
+
+export type CustomersByCountry = { country: string; customerCount: number };
+
+export type TracksByMediaType = { mediaType: string; trackCount: number };
+
+export type SalesTotalByMonth = { month: string; salesTotal: number };
