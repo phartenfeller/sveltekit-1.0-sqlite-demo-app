@@ -26,7 +26,7 @@
 		if (!host) return;
 		let urlPath = host.startsWith('localhost')
 			? `${host}${apiPath}`
-			: `${protocol}${host}${apiPath}`;
+			: `${protocol}//${host}${apiPath}`;
 
 		const url = new URL(urlPath);
 
