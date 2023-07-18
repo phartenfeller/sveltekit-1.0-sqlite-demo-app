@@ -26,6 +26,9 @@
 </script>
 
 <div class="px-4">
+	{#if !data.loggedIn}
+		<div class="mt-3 mb-2"><a href="/login">Login</a> to see protected routes...</div>
+	{/if}
 	<h1 class="is-size-1 mb-5">Tracks</h1>
 
 	<input
