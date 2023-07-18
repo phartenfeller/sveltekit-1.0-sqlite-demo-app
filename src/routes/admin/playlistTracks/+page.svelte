@@ -1,13 +1,12 @@
 <script lang="ts">
 	import type { PlaylistTrack, PlaylistTrackResponse } from '$lib/server/db/types';
 	import {
-		getCoreRowModel,
-		type ColumnDef,
-		type TableOptions,
-		getSortedRowModel,
 		createSvelteTable,
 		flexRender,
-		type SortingState
+		getCoreRowModel,
+		type ColumnDef,
+		type SortingState,
+		type TableOptions
 	} from '@tanstack/svelte-table';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
@@ -15,15 +14,21 @@
 	let data: PlaylistTrack[] = [];
 	let sorting: SortingState = [];
 	let host = '';
+	let protocol = '';
 	let page = 1;
 	let maxPages = 1;
 	const pageSize = 25;
 	let search = '';
 	let filters: Record<string, string> = {};
+	const apiPath = '/api/playlistTracks';
 
 	function requestData() {
 		if (!host) return;
-		const url = new URL(host + '/api/playlistTracks');
+		let urlPath = host.startsWith('localhost')
+			? `${host}${apiPath}`
+			: `${protocol}${host}${apiPath}`;
+
+		const url = new URL(urlPath);
 
 		if (sorting?.length > 0) {
 			url.searchParams.set('sortCol', sorting[0].id);
@@ -148,7 +153,7 @@
 
 	onMount(() => {
 		host = window.location.host;
-
+		protocol = window.location.protocol;
 		requestData();
 	});
 </script>
