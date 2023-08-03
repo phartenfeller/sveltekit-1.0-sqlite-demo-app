@@ -46,7 +46,7 @@
 			url.searchParams.set('colFilters', JSON.stringify(filters));
 		}
 
-		const dest = url.toString().replace(host, '');
+		const dest = host.startsWith('localhost') ? url.toString().replace(host, '') : url.toString();
 		console.log('dest', dest);
 		console.log('host', host);
 
