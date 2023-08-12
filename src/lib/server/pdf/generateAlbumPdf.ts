@@ -2,11 +2,13 @@ import PdfPrinter from 'pdfmake';
 import blobStream, { type IBlobStream } from 'blob-stream';
 import type { TDocumentDefinitions, TFontDictionary } from 'pdfmake/interfaces';
 import { getAlbumById, getAlbumImage, getAlbumTracks, otherAlbumsOfArtist } from '../db';
+import { SERVER_ASSETS } from '$env/static/private';
+import path from 'node:path';
 
 const fonts: TFontDictionary = {
 	Inter: {
-		normal: 'src/lib/server/pdf/fonts/Inter-Regular.ttf',
-		bold: 'src/lib/server/pdf/fonts/Inter-Bold.ttf'
+		normal: path.join(SERVER_ASSETS, 'fonts/Inter-Regular.ttf'),
+		bold: path.join(SERVER_ASSETS, 'fonts/Inter-Bold.ttf')
 	}
 };
 const printer = new PdfPrinter(fonts);
