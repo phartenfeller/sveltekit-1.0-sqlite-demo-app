@@ -14,7 +14,7 @@
 <div class="px-4">
 	<div class="columns">
 		<div class="column is-three-quarters">
-			<h1 class="is-size-1">{data.album.albumTitle}</h1>
+			<h1 class="is-size-1 album-header">{data.album.albumTitle}</h1>
 			<p class="is-size-4">By {data.album.artistName}</p>
 			<a
 				href="/api/album/{data.album.albumId}/pdf/{data.album.albumTitle
@@ -94,3 +94,9 @@
 		</form>
 	{/if}
 </div>
+
+<style>
+	.album-header {
+		view-transition-name: album-title;
+	}
+</style>

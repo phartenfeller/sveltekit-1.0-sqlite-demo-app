@@ -25,6 +25,10 @@
 	}
 
 	let tracks = data.tracks;
+
+	function initViewTransition(e: any) {
+		e.target.style.viewTransitionName = 'album-title';
+	}
 </script>
 
 <div class="px-4">
@@ -57,7 +61,11 @@
 						<tr>
 							<td>{track.trackName}</td>
 							<td>{track.artistName}</td>
-							<td><a href={`/album/${track.albumId}`}>{track.albumTitle}</a></td>
+							<td
+								><a on:click={initViewTransition} href={`/album/${track.albumId}`}
+									>{track.albumTitle}</a
+								></td
+							>
 							<td>{track.genre}</td>
 						</tr>
 					{/each}

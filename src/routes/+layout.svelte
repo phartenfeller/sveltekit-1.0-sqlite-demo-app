@@ -1,5 +1,18 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import type { LayoutServerData } from './$types';
+	import { onNavigate } from '$app/navigation';
+
+	onNavigate((navigation) => {
+		if (!(document as any).startViewTransition) return;
+
+		return new Promise((resolve) => {
+			(document as any).startViewTransition(async () => {
+				resolve();
+				await navigation.complete;
+			});
+		});
+	});
 
 	export let data: LayoutServerData;
 </script>
@@ -11,9 +24,16 @@
 		</div>
 		<div class="navbar-menu">
 			<div class="navbar-start">
-				<a href="/" class="navbar-item">Home</a>
+				<a
+					aria-current={$page.url.pathname === '/' ? 'page' : undefined}
+					href="/"
+					class="navbar-item">Home</a
+				>
 				{#if data?.username}
-					<div class="navbar-item has-dropdown is-hoverable">
+					<div
+						aria-current={$page.url.pathname.startsWith('/admin') ? 'page' : undefined}
+						class="navbar-item has-dropdown is-hoverable"
+					>
 						<span class="navbar-link"> Admin </span>
 
 						<div class="navbar-dropdown">
@@ -24,7 +44,11 @@
 					</div>
 				{/if}
 
-				<a href="/about" class="navbar-item">About</a>
+				<a
+					aria-current={$page.url.pathname === '/about' ? 'page' : undefined}
+					href="/about"
+					class="navbar-item">About</a
+				>
 			</div>
 		</div>
 
@@ -47,3 +71,18 @@
 	</nav>
 </header>
 <slot />
+
+<style>
+	.navbar-item {
+		display: flex;
+		align-items: center;
+	}
+
+	.navbar-item[aria-current='page']::before {
+		content: '●';
+		font-size: 0.7rem;
+		color: #46fde1;
+		padding-right: 2px;
+		view-transition-name: active-page;
+	}
+</style>
