@@ -16,6 +16,10 @@ Code from following YouTube tutorials:
   - [Server-side filtered, paginated and sorted Table in SvelteKit (Part 2/2)](https://youtu.be/VgCU0cVWgJE)
   - [SvelteKit TanStack Table edit row (+ custom table components)](https://youtu.be/D_xoOSYzJ7U)
   - [Markdown in SvelteKit with custom Components: mdsvex](https://youtu.be/VJFkyGd0FEA)
+  - [Accessible charts only with CSS? - Charts.css](https://youtu.be/W7P0nE709jg)
+  - [Image optimization in SvelteKit with vite-imagetools](https://youtu.be/285vSLe9LQ8)
+  - [Smooth Page / View Transitions in SvelteKit](https://youtu.be/whNdqjrVFsg)
+
 
 Full Playlist: [SvelteKit](https://www.youtube.com/playlist?list=PLIyDDWd5rhaYwAiXQyonufcZgc_xOMtId)
 
