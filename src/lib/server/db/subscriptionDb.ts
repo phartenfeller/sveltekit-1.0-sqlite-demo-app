@@ -77,6 +77,26 @@ async function sendNotification(subscription: PushSubscription, payload: string)
 	}
 }
 
+function deleteIfExpired(deviceId: number) {
+	const last3Success = subDb
+		.prepare(
+			`
+		SELECT sum(success) as cnt
+		FROM notif_log
+		WHERE device_id = ?
+		AND success = 0
+		ORDER BY created_at DESC
+		LIMIT 3
+	`
+		)
+		.get(deviceId) as { cnt: number };
+
+	if (last3Success.cnt === 0) {
+		console.log(`Removing expired subscription for device ${deviceId}`);
+		subDb.prepare('DELETE FROM user_devices WHERE device_id = ?').run(deviceId);
+	}
+}
+
 async function sendNotificationToDevices(devices: SubDevice[], payload: string) {
 	devices.forEach(async (device) => {
 		const subscription = JSON.parse(device.subscription);
@@ -84,7 +104,8 @@ async function sendNotificationToDevices(devices: SubDevice[], payload: string) 
 
 		if (!res.ok) {
 			console.error(
-				`Failed to send notification to device ${device.device_id}: ${res.body} (${res.status})`
+				`Failed to send notification to device ${device.device_id}: ${res.body} (${res.status}).
+${JSON.stringify(res)}`
 			);
 		}
 
@@ -100,6 +121,8 @@ async function sendNotificationToDevices(devices: SubDevice[], payload: string) 
 		// remove expired subscription
 		if (res.status === 410) {
 			subDb.prepare('DELETE FROM user_devices WHERE device_id = ?').run(device.device_id);
+		} else if (!res.ok) {
+			deleteIfExpired(device.device_id);
 		}
 	});
 }

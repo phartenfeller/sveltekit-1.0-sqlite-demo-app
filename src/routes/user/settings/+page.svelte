@@ -111,6 +111,11 @@
 					<div>
 						<button class="button" type="button" on:click={unsubscribe}>Unsubscribe</button>
 					</div>
+					<div class="mt-4">
+						<form method="post" action="?/testNotification">
+							<button class="button" type="submit">Test Notification</button>
+						</form>
+					</div>
 				{/if}
 			{/if}
 		</div>
