@@ -24,12 +24,34 @@
 		});
 	}
 
+	async function sendSubscriptionToServer(subscription: PushSubscription) {
+		try {
+			const res = await fetch('/api/addSubscription', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ subscription })
+			});
+			if (!res.ok)
+				throw new Error(`Error saving subscription on server: ${res.statusText} (${res.status})`);
+		} catch (error) {
+			console.error('Error saving subscription on server:', error);
+			unsubscribe();
+		}
+	}
+
 	async function checkSubscriptionStatus() {
 		if ('serviceWorker' in navigator) {
 			const registration = await navigator.serviceWorker.ready;
 			const subscription = await registration.pushManager.getSubscription();
 			console.log('Subscription:', subscription);
-			return subscription !== null;
+			const exists = subscription !== null;
+			if (exists) {
+				// just to make sure the subscription is saved on the server
+				sendSubscriptionToServer(subscription);
+			}
+			return exists;
 		}
 		return false;
 	}
@@ -47,8 +69,20 @@
 				});
 				isSubscribed = true;
 				console.log('Subscription:', JSON.stringify(subscription));
+				sendSubscriptionToServer(subscription);
 			} catch (err) {
 				console.error('Error subscribing:', err);
+			}
+		}
+	}
+
+	async function unsubscribe() {
+		if ('serviceWorker' in navigator) {
+			const registration = await navigator.serviceWorker.ready;
+			const subscription = await registration.pushManager.getSubscription();
+			if (subscription) {
+				await subscription.unsubscribe();
+				isSubscribed = false;
 			}
 		}
 	}
@@ -73,6 +107,11 @@
 					settings...
 				</p>
 				<p>Subscribed to push notifications: <b>{isSubscribed}</b></p>
+				{#if isSubscribed}
+					<div>
+						<button class="button" type="button" on:click={unsubscribe}>Unsubscribe</button>
+					</div>
+				{/if}
 			{/if}
 		</div>
 	</div>
