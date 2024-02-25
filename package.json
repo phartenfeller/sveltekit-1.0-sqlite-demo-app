@@ -23,6 +23,7 @@
 		"@types/file-saver": "^2.0.7",
 		"@types/nodemailer": "^6.4.14",
 		"@types/pdfmake": "^0.2.9",
+		"@types/web-push": "^3.6.3",
 		"@typescript-eslint/eslint-plugin": "^6.21.0",
 		"@typescript-eslint/parser": "^7.0.2",
 		"ag-grid-community": "^31.1.1",
@@ -49,6 +50,7 @@
 		"charts.css": "^0.9.0",
 		"mdsvex": "^0.11.0",
 		"nodemailer": "^6.9.4",
-		"pdfmake": "^0.2.9"
+		"pdfmake": "^0.2.9",
+		"web-push": "^3.6.7"
 	}
 }

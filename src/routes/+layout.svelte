@@ -53,16 +53,22 @@
 		</div>
 
 		<div class="navbar-end">
+			{#if data?.username}
+				<div
+					aria-current={$page.url.pathname.startsWith('/user') ? 'page' : undefined}
+					class="navbar-item has-dropdown is-hoverable"
+				>
+					<span class="navbar-link"> {data.username} </span>
+
+					<div class="navbar-dropdown">
+						<a href="/user/settings" class="navbar-item">Settings</a>
+						<a href="/logout" class="navbar-item">Log out</a>
+					</div>
+				</div>
+			{/if}
 			<div class="navbar-item">
 				<div class="buttons">
-					{#if data?.username}
-						<a
-							href="/logout"
-							class="button is-primary"
-							data-sveltekit-preload-data="off"
-							data-sveltekit-reload>Hello {data.username}, Log out</a
-						>
-					{:else}
+					{#if !data?.username}
 						<a href="/login" class="button is-primary">Log in</a>
 					{/if}
 				</div>
