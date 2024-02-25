@@ -19,6 +19,7 @@ export const actions: Actions = {
 			performLogin(cookies, username);
 			throw redirect(303, '/');
 		} else {
+			console.log('Missing username or password', data);
 			return fail(400, { errorMessage: 'Missing username or password' });
 		}
 	},

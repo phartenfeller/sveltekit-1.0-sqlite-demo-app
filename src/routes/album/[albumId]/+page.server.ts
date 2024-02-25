@@ -1,6 +1,7 @@
 import { getAlbumById, getAlbumTracks, mergeAlbumImage, updateAlbumTitle } from '$lib/server/db';
 import { error, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { notifChannel } from '$lib/server/db/subscriptionDb';
 
 export const load = (({ params, locals }) => {
 	const albumId = parseInt(params.albumId);
@@ -44,6 +45,7 @@ export const actions: Actions = {
 		}
 
 		updateAlbumTitle(albumId, albumTitle);
+		notifChannel('album-updates', `Album "${albumId}" updated to "${albumTitle}"`);
 	},
 	updateAlbumImage: async ({ request, locals }) => {
 		if (!locals.username || !locals?.roles?.includes('admin')) {

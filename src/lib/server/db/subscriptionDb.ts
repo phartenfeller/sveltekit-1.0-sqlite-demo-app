@@ -158,9 +158,17 @@ export function addUserToChannel(username: string, channelId: string) {
 		subDb.prepare('INSERT INTO notif_channels (channel_id) VALUES (?)').run(channelId);
 	}
 
-	subDb
-		.prepare('INSERT INTO notif_channel_users (username, channel_id) VALUES (?, ?)')
-		.run(username, channelId);
+	const subCount = subDb
+		.prepare(
+			`SELECT count(*) as cnt FROM notif_channel_users WHERE username = ? AND channel_id = ?`
+		)
+		.get(username, channelId) as { cnt: number };
+
+	if (subCount.cnt === 0) {
+		subDb
+			.prepare('INSERT INTO notif_channel_users (username, channel_id) VALUES (?, ?)')
+			.run(username, channelId);
+	}
 }
 
 export async function notifUser(username: string, payload: string) {

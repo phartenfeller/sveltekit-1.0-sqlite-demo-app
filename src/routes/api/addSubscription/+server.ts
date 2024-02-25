@@ -1,4 +1,4 @@
-import { addUserDevice } from '$lib/server/db/subscriptionDb';
+import { addUserDevice, addUserToChannel } from '$lib/server/db/subscriptionDb';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 
 export const POST = (async ({ locals, request }) => {
@@ -17,6 +17,7 @@ export const POST = (async ({ locals, request }) => {
 	}
 
 	addUserDevice(username, data.subscription);
+	addUserToChannel(username, 'album-updates');
 
 	return json({ success: true });
 }) satisfies RequestHandler;

@@ -62,7 +62,12 @@
 
 					<div class="navbar-dropdown">
 						<a href="/user/settings" class="navbar-item">Settings</a>
-						<a href="/logout" class="navbar-item">Log out</a>
+						<a
+							href="/logout"
+							class="navbar-item"
+							data-sveltekit-preload-data="off"
+							data-sveltekit-reload>Log out</a
+						>
 					</div>
 				</div>
 			{/if}
