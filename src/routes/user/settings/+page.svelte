@@ -94,6 +94,7 @@
 	<div class="mt-4">
 		<h2 class="is-size-3">Push Notifications</h2>
 		<p>Receive notifications when albums are updated.</p>
+		<p><b>Subscriptions get reset every night!</b></p>
 		<div class="mt-3">
 			{#if nottifPermGranted === null}
 				<p>Checking permissions...</p>
