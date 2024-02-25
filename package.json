@@ -39,7 +39,7 @@
 		"tslib": "^2.6.2",
 		"typescript": "^5.3.3",
 		"vite": "^4.5.2",
-		"vite-imagetools": "^6.2.9"
+		"vite-imagetools": "^5.1.2"
 	},
 	"type": "module",
 	"packageManager": "yarn@3.3.1",
