@@ -1,7 +1,7 @@
 type ImgProps = {
 	src: string;
 	w: number;
+	h: number;
 };
-type ImgPropsH = ImgProps & { h: number };
 
-export type ImgMeta = { img: ImgPropsH; sources: { [key: string]: ImgProps[] } };
+export type ImgMeta = { img: ImgProps; sources: { [key: string]: string } };
