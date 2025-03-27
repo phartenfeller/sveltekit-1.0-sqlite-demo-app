@@ -49,6 +49,12 @@
 					href="/about"
 					class="navbar-item">About</a
 				>
+
+				<a
+					aria-current={$page.url.pathname === '/chat' ? 'page' : undefined}
+					href="/chat"
+					class="navbar-item">AI</a
+				>
 			</div>
 		</div>
 
@@ -62,6 +68,7 @@
 
 					<div class="navbar-dropdown">
 						<a href="/user/settings" class="navbar-item">Settings</a>
+
 						<a
 							href="/logout"
 							class="navbar-item"

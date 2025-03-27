@@ -12,6 +12,7 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
+		"@ai-sdk/svelte": "^2.1.2",
 		"@sveltejs/adapter-auto": "^2.1.1",
 		"@sveltejs/adapter-node": "^4.0.1",
 		"@sveltejs/kit": "^1.30.4",
@@ -27,6 +28,7 @@
 		"@typescript-eslint/eslint-plugin": "^6.21.0",
 		"@typescript-eslint/parser": "^7.0.2",
 		"ag-grid-community": "^31.1.1",
+		"ai": "^4.2.6",
 		"eslint": "^8.57.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte3": "^4.0.0",
@@ -34,16 +36,18 @@
 		"file-saver": "^2.0.5",
 		"prettier": "^3.2.5",
 		"prettier-plugin-svelte": "^3.2.1",
-		"svelte": "^4.2.12",
+		"svelte": "^5.25.3",
 		"svelte-check": "^3.6.4",
 		"tslib": "^2.6.2",
-		"typescript": "^5.3.3",
-		"vite": "^4.5.2",
-		"vite-imagetools": "^5.1.2"
+		"typescript": "^5.8.2",
+		"vite": "^6.2.3",
+		"vite-imagetools": "^5.1.2",
+		"zod": "^3.24.2"
 	},
 	"type": "module",
 	"packageManager": "yarn@3.3.1",
 	"dependencies": {
+		"@ai-sdk/anthropic": "^1.2.2",
 		"bcrypt": "^5.1.1",
 		"better-sqlite3": "^9.4.3",
 		"blob-stream": "^0.1.3",

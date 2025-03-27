@@ -138,7 +138,8 @@ join artists at
  on a.ArtistId = at.ArtistId
 join genres g
  on t.GenreId = g.GenreId
-where lower(t.Name) like lower('%' || $searchTerm || '%')
+where ( lower(t.Name) like lower('%' || $searchTerm || '%') or lower(at.Name) like lower('%' || $searchTerm || '%') or lower(a.Title) like lower('%' || $searchTerm || '%') )
+  
 limit $limit  
   `;
 	const stmnt = db.prepare(sql);
